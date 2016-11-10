@@ -19,3 +19,9 @@ project/plugins/project/
 # ENSIME specific
 .ensime_cache/
 .ensime
+
+# Eclipse
+.cache-main
+.classpath
+.project
+.settings/

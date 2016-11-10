@@ -2,7 +2,7 @@ name := "backend-akka-postgres"
 
 version := "1.0.0"
 
-scalaVersion := "2.12.0"
+scalaVersion := "2.11.8"
 
 scalacOptions ++= Seq(
   "-feature",
@@ -11,4 +11,5 @@ scalacOptions ++= Seq(
   "-language:postfixOps",
   "-language:higherKinds")
 
-
+libraryDependencies ++= Seq(
+  "com.typesafe.akka" %% "akka-http-experimental" % "2.4.11")
