@@ -4,8 +4,28 @@
   "description": "Frontend - Relay",
   "main": "index.js",
   "scripts": {
+    "clean": "n-clean app/bundle.js",
+    "build-js": "npm run clean && browserify app/scripts/index.js -o app/bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "github/seance",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "babel-preset-latest": "^6.16.0",
+    "babelify": "^7.3.0",
+    "browserify": "^13.1.1",
+    "npm-build-tools": "^2.2.5"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "latest"
+          ]
+        }
+      ]
+    ]
+  }
 }
