@@ -1,6 +1,7 @@
 package poc
 
 import poc.schema._
+import poc.database._
 import sangria.parser._
 import sangria.execution._
 import sangria.marshalling.circe._
@@ -8,16 +9,23 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.ContentTypes._
-import akka.http.scaladsl.model.StatusCodes._
+import akka.http.scaladsl.model.StatusCodes.{Success => _, _}
 import akka.http.scaladsl.server.Directives
 import akka.stream.ActorMaterializer
+import slick.driver.H2Driver.api._
 import scala.concurrent._
+import scala.util._
+import scala.io._
 
-object WebServer extends App with Directives with PocSchema {
+object WebServer extends App with Directives with PocSchema with PocDatabase {
 
   implicit val system = ActorSystem("graphql-poc")
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
+  
+  val db = Database.forURL(
+      url = "jdbc:h2:mem:pocdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
+      driver = "org.h2.Driver") 
   
   def executeGraphQL(query: String) = {
     QueryParser.parse(query).map { queryDoc =>
@@ -33,21 +41,24 @@ object WebServer extends App with Directives with PocSchema {
 
   val graphql = path("graphql") {
     get {
-      parameter("query") { queryStr =>
-        complete(executeGraphQL(queryStr))
+      parameter("query") { query =>
+        complete(executeGraphQL(query))
       }
     }
   }
   
-  val bindingFuture = Http().bindAndHandle(graphql, "localhost", 8080)
-  
-  bindingFuture.onSuccess { case b =>
-    println(s"Server listening at ${b.localAddress}")
+  val bindingFuture = bootstrapDb.flatMap { _ =>
+    Http().bindAndHandle(graphql, "localhost", 8080)
   }
   
-  scala.io.StdIn.readLine()
+  bindingFuture.onComplete {
+    case Success(b) => println(s"Server listening at ${b.localAddress}")
+    case Failure(t) => println(s"Server startup failed: $t")
+  }
+  
+  StdIn.readLine()
   
   bindingFuture.flatMap(_.unbind()).onComplete { _ =>
-    system.terminate()
+    db.shutdown.flatMap(_ => system.terminate())
   }
 }

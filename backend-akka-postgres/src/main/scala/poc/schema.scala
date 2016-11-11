@@ -1,13 +1,16 @@
 package poc.schema
 
 import poc.models._
+import poc.database._
 import sangria.schema._
+import slick.driver.H2Driver.api._
 
-trait PocSchema {
+trait PocSchema { self: PocDatabase =>
   
-  val foos = Seq(Foo("Hello", 42), Foo("world", 13))
+  def foos = db.run(Foos.result)
   
   val FooType = ObjectType("Foo", fields[Unit, Foo](
+      Field("id", IDType, resolve = _.value.id.toString),
       Field("bar", StringType, resolve = _.value.bar),
       Field("zut", IntType, resolve = _.value.zut)))
       
