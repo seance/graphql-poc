@@ -2,6 +2,8 @@ package poc
 
 import poc.schema._
 import poc.database._
+import io.circe.Json
+import io.circe.syntax._
 import sangria.parser._
 import sangria.execution._
 import sangria.marshalling.circe._
@@ -12,6 +14,7 @@ import akka.http.scaladsl.model.ContentTypes._
 import akka.http.scaladsl.model.StatusCodes.{Success => _, _}
 import akka.http.scaladsl.server.Directives
 import akka.stream.ActorMaterializer
+import de.heikoseeberger.akkahttpcirce.CirceSupport._
 import slick.driver.H2Driver.api._
 import scala.concurrent._
 import scala.util._
@@ -27,15 +30,16 @@ object WebServer extends App with Directives with PocSchema with PocDatabase {
       url = "jdbc:h2:mem:pocdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
       driver = "org.h2.Driver") 
   
-  def executeGraphQL(query: String) = {
+  def executeGraphQL(query: String): Future[(StatusCode, Json)] = {
     QueryParser.parse(query).map { queryDoc =>
-      Executor.execute(PocSchema, queryDoc).map { result =>
-        HttpResponse(entity = HttpEntity(`application/json`, result.spaces2))
-      } recover { case t: Throwable =>
-        HttpResponse(UnprocessableEntity, entity = t.getMessage)
+      Executor.execute(PocSchema, queryDoc).map(OK -> _) recover {
+        case e: QueryAnalysisError => UnprocessableEntity -> e.resolveError
+        case e: ErrorWithResolver => InternalServerError -> e.resolveError
       }
     } getOrElse Future.successful {
-      HttpResponse(BadRequest, entity = s"Unparseable query $query")
+      BadRequest -> Map(
+        "errors" -> Seq(Map("message" -> s"Unparseable query $query"))
+      ).asJson
     }
   }
 

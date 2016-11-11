@@ -13,6 +13,7 @@ scalacOptions ++= Seq(
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http-experimental" % "2.4.11",
+  "de.heikoseeberger" %% "akka-http-circe" % "1.11.0-M1",
   "org.sangria-graphql" %% "sangria" % "1.0.0-RC3",
   "org.sangria-graphql" %% "sangria-circe" % "0.6.0",
   "com.typesafe.slick" %% "slick" % "3.1.1",
