@@ -3,7 +3,7 @@ package poc.schema
 import poc.models._
 import poc.database._
 import sangria.schema._
-import slick.driver.H2Driver.api._
+import slick.driver.PostgresDriver.api._
 
 trait PocSchema { self: PocDatabase =>
   

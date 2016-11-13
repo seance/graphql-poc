@@ -15,7 +15,7 @@ import akka.http.scaladsl.model.StatusCodes.{Success => _, _}
 import akka.http.scaladsl.server.Directives
 import akka.stream.ActorMaterializer
 import de.heikoseeberger.akkahttpcirce.CirceSupport._
-import slick.driver.H2Driver.api._
+import slick.driver.PostgresDriver.api._
 import scala.concurrent._
 import scala.util._
 import scala.io._
@@ -27,8 +27,8 @@ object WebServer extends App with Directives with PocSchema with PocDatabase {
   implicit val executionContext = system.dispatcher
   
   val db = Database.forURL(
-      url = "jdbc:h2:mem:pocdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
-      driver = "org.h2.Driver") 
+      url = "jdbc:postgresql://backend1_db:5432/pocdb?user=postgres&password=password",
+      driver = "org.postgresql.Driver")
   
   def executeGraphQL(query: String): Future[(StatusCode, Json)] = {
     QueryParser.parse(query).map { queryDoc =>
@@ -52,7 +52,7 @@ object WebServer extends App with Directives with PocSchema with PocDatabase {
   }
   
   val bindingFuture = bootstrapDb.flatMap { _ =>
-    Http().bindAndHandle(graphql, "localhost", 8080)
+    Http().bindAndHandle(graphql, "0.0.0.0", 8080)
   }
   
   bindingFuture.onComplete {
@@ -60,9 +60,9 @@ object WebServer extends App with Directives with PocSchema with PocDatabase {
     case Failure(t) => println(s"Server startup failed: $t")
   }
   
-  StdIn.readLine()
-  
-  bindingFuture.flatMap(_.unbind()).onComplete { _ =>
-    db.shutdown.flatMap(_ => system.terminate())
-  }
+//  StdIn.readLine()
+//  
+//  bindingFuture.flatMap(_.unbind()).onComplete { _ =>
+//    db.shutdown.flatMap(_ => system.terminate())
+//  }
 }

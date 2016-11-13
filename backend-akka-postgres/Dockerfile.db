@@ -1,0 +1,6 @@
+FROM postgres:9
+MAINTAINER github/seance
+
+ENV POSTGRES_DB pocdb
+
+# COPY seed data, e.g. COPY psql_dump.sql /docker-entrypoint-initdb.d/

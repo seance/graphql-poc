@@ -1,7 +1,7 @@
 package poc.database
 
 import poc.models._
-import slick.driver.H2Driver.api._
+import slick.driver.PostgresDriver.api._
 
 trait PocDatabase {
   

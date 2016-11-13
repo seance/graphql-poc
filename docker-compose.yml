@@ -1,0 +1,19 @@
+version: "2"
+
+services:
+  backend1_web:
+    build:
+      context: backend-akka-postgres
+      dockerfile: Dockerfile.web
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "backend1_db"
+  backend1_db:
+    build:
+      context: backend-akka-postgres
+      dockerfile: Dockerfile.db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=password
