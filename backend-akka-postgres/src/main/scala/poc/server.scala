@@ -15,20 +15,26 @@ import akka.http.scaladsl.model.StatusCodes.{Success => _, _}
 import akka.http.scaladsl.server.Directives
 import akka.stream.ActorMaterializer
 import de.heikoseeberger.akkahttpcirce.CirceSupport._
-import slick.driver.PostgresDriver.api._
-import scala.concurrent._
+import com.typesafe.config.ConfigFactory
+import slick.backend.DatabaseConfig
+import slick.driver.JdbcProfile
+import scala.concurrent.Future
 import scala.util._
 import scala.io._
 
 object WebServer extends App with Directives with PocSchema with PocDatabase {
 
-  implicit val system = ActorSystem("graphql-poc")
+  val config = ConfigFactory.load()
+  
+  implicit val system = ActorSystem("graphql-poc", config.getConfig("actorsystem"))
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
   
-  val db = Database.forURL(
-      url = "jdbc:postgresql://backend1_db:5432/pocdb?user=postgres&password=password",
-      driver = "org.postgresql.Driver")
+  val dbConfig = DatabaseConfig.forConfig[JdbcProfile]("database")
+  
+//  val db = Database.forURL(
+//      url = "jdbc:postgresql://backend1_db:5432/pocdb?user=postgres&password=password",
+//      driver = "org.postgresql.Driver")
   
   def executeGraphQL(query: String): Future[(StatusCode, Json)] = {
     QueryParser.parse(query).map { queryDoc =>

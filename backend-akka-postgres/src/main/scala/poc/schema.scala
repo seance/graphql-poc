@@ -3,11 +3,12 @@ package poc.schema
 import poc.models._
 import poc.database._
 import sangria.schema._
-import slick.driver.PostgresDriver.api._
 
 trait PocSchema { self: PocDatabase =>
   
-  def foos = db.run(Foos.result)
+  import dbConfig.driver.api._
+  
+  def foos = dbConfig.db.run(Foos.result)
   
   val FooType = ObjectType("Foo", fields[Unit, Foo](
       Field("id", IDType, resolve = _.value.id.toString),

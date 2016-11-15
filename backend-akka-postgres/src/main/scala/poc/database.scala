@@ -1,13 +1,16 @@
 package poc.database
 
 import poc.models._
-import slick.driver.PostgresDriver.api._
+import slick.backend.DatabaseConfig
+import slick.driver.JdbcProfile
 
 trait PocDatabase {
   
-  val db: Database
+  val dbConfig: DatabaseConfig[JdbcProfile]
   
-  def bootstrapDb = db.run {
+  import dbConfig.driver.api._
+  
+  def bootstrapDb = dbConfig.db.run {
     val foosSeed = Seq(Foo(0, "Hello", 42), Foo(0, "world", 13))
     
     DBIO.seq(
