@@ -25,3 +25,4 @@ project/plugins/project/
 .classpath
 .project
 .settings/
+bin/
