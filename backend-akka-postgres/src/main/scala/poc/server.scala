@@ -32,10 +32,6 @@ object WebServer extends App with Directives with PocSchema with PocDatabase {
   
   val dbConfig = DatabaseConfig.forConfig[JdbcProfile]("database")
   
-//  val db = Database.forURL(
-//      url = "jdbc:postgresql://backend1_db:5432/pocdb?user=postgres&password=password",
-//      driver = "org.postgresql.Driver")
-  
   def executeGraphQL(query: String): Future[(StatusCode, Json)] = {
     QueryParser.parse(query).map { queryDoc =>
       Executor.execute(PocSchema, queryDoc).map(OK -> _) recover {
