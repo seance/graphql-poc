@@ -7,6 +7,12 @@ services:
       dockerfile: Dockerfile.web
     ports:
       - "8080:8080"
+    environment:
+      - DB_HOST=backend1_db
+      - DB_PORT=5432
+      - DB_NAME=pocdb
+      - DB_USER=postgres
+      - DB_PASSWORD=password
     depends_on:
       - "backend1_db"
   backend1_db:
