@@ -53,9 +53,9 @@ object WebServer extends App with Directives with PocSchema with PocDatabase {
     }
   }
   
-  val bindingFuture = bootstrapDb.flatMap { _ =>
-    Http().bindAndHandle(graphql, "0.0.0.0", 8080)
-  }
+  val bindingFuture = Http().bindAndHandle(graphql,
+      config.getString("server.interface"),
+      config.getInt("server.port"))
   
   bindingFuture.onComplete {
     case Success(b) => println(s"Server listening at ${b.localAddress}")

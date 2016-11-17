@@ -10,14 +10,6 @@ trait PocDatabase {
   
   import dbConfig.driver.api._
   
-  def bootstrapDb = dbConfig.db.run {
-    val foosSeed = Seq(Foo(0, "Hello", 42), Foo(0, "world", 13))
-    
-    DBIO.seq(
-      Foos.schema.create,
-      Foos ++= foosSeed)
-  }
-  
   lazy val Foos = new TableQuery(tag => new Foos(tag))
   
   class Foos(tag: Tag) extends Table[Foo](tag, "foos") {
