@@ -1,0 +1,5 @@
+CREATE DATABASE PLOCAL:/orientdb/databases/pocdb;
+
+CREATE CLASS V_foo extends V;
+CREATE VERTEX V_foo CONTENT {"bar": "hello", "zut": 42};
+CREATE VERTEX V_foo CONTENT {"bar": "world", "zut": 13};

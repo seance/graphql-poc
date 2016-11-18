@@ -1,0 +1,11 @@
+FROM openjdk:8-jdk
+MAINTAINER github/seance
+
+RUN mkdir -p /app
+WORKDIR /app
+
+COPY target/scala-2.11/backend-akka-orientdb_2.11-1.0.0-one-jar.jar /app
+
+EXPOSE 8080
+
+CMD ["java", "-jar", "/app/backend-akka-orientdb_2.11-1.0.0-one-jar.jar"]
