@@ -2,9 +2,16 @@ package poc.database
 
 import poc.models._
 import gremlin.scala._
-import scala.concurrent.Future
+import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory
 
 trait PocDatabase {
   
-  def graph: ScalaGraph
+  def graphFactory: OrientGraphFactory
+  
+  def withGraph[A](f: ScalaGraph => A): A = {
+    val graph = graphFactory.getNoTx.asScala
+    val result = f(graph)
+    graph.close()
+    result
+  }
 }

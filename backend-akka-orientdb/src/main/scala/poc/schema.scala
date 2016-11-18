@@ -7,7 +7,7 @@ import gremlin.scala._
 
 trait PocSchema { self: PocDatabase =>
   
-  def foos = graph.V.hasLabel[Foo].map(_.toCC[Foo]).toList
+  def foos = withGraph(_.V.hasLabel[Foo].map(_.toCC[Foo]).toList)
   
   val FooType = ObjectType("Foo", fields[Unit, Foo](
       Field("id", IDType, resolve = _.value.id.toString),
