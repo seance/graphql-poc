@@ -30,10 +30,12 @@ object WebServer extends App with Directives with PocSchema with PocDatabase {
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
   
-  def graph = new OrientGraphFactory(
+  val factory = new OrientGraphFactory(
       config.getString("database.url"),
       config.getString("database.user"),
-      config.getString("database.password")).getNoTx().asScala
+      config.getString("database.password")).setupPool(1, 10)
+  
+  def graph = factory.getNoTx().asScala
   
   def executeGraphQL(query: String): Future[(StatusCode, Json)] = {
     QueryParser.parse(query).map { queryDoc =>
@@ -68,7 +70,7 @@ object WebServer extends App with Directives with PocSchema with PocDatabase {
 //  StdIn.readLine()
 //  
 //  bindingFuture.flatMap(_.unbind()).onComplete { _ =>
-//    graph.close()
+//    factory.close()
 //    system.terminate()
 //  }
 }
