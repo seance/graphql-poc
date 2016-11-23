@@ -37,6 +37,12 @@ object WebServer extends App with Directives with PocSchema with PocDatabase {
     .setupPool(
       config.getInt("database.pool.maxPartitionSize"),
       config.getInt("database.pool.maxSize"))
+      
+  def badQuery = Future.successful {
+    BadRequest -> Map(
+      "errors" -> Seq(Map("message" -> s"Unparseable query"))
+    ).asJson
+  }
   
   def executeGraphQL(query: String): Future[(StatusCode, Json)] = {
     QueryParser.parse(query).map { queryDoc =>
@@ -46,11 +52,11 @@ object WebServer extends App with Directives with PocSchema with PocDatabase {
           case e: ErrorWithResolver => InternalServerError -> e.resolveError
         }
       }
-    } getOrElse Future.successful {
-      BadRequest -> Map(
-        "errors" -> Seq(Map("message" -> s"Unparseable query $query"))
-      ).asJson
-    }
+    } getOrElse badQuery
+  }
+  
+  val root = pathEndOrSingleSlash {
+    redirect("graphiql", Found)
   }
 
   val graphql = path("graphql") {
@@ -58,10 +64,27 @@ object WebServer extends App with Directives with PocSchema with PocDatabase {
       parameter("query") { query =>
         complete(executeGraphQL(query))
       }
+    } ~
+    post {
+      entity(as[Json]) { b =>
+        complete(b.cursor.get[String]("query").fold(
+            _ => badQuery,
+            executeGraphQL))
+      }
     }
   }
   
-  val bindingFuture = Http().bindAndHandle(graphql,
+  val graphiql = (path("graphiql") & get) {
+    getFromResource("assets/graphiql.html")
+  }
+  
+  val assets = (pathPrefix("assets") & get) {
+    getFromResourceDirectory("assets")
+  }
+  
+  val routes = root ~ graphql ~ graphiql ~ assets
+  
+  val bindingFuture = Http().bindAndHandle(routes,
       config.getString("server.interface"),
       config.getInt("server.port"))
   
@@ -73,7 +96,7 @@ object WebServer extends App with Directives with PocSchema with PocDatabase {
 //  StdIn.readLine()
 //  
 //  bindingFuture.flatMap(_.unbind()).onComplete { _ =>
-//    factory.close()
+//    graphFactory.close()
 //    system.terminate()
 //  }
 }
