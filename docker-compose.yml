@@ -1,6 +1,10 @@
 version: "2"
 
 services:
+
+  ##
+  # Stack 1: Akka + Postgres
+  ##
   backend1_web:
     build:
       context: backend-akka-postgres
@@ -17,6 +21,7 @@ services:
       - DB_PASSWORD=password
     depends_on:
       - "backend1_db"
+
   backend1_db:
     build:
       context: backend-akka-postgres
@@ -25,6 +30,11 @@ services:
       - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=pocdb
+
+  ##
+  # Stack 2: Akka + OrientDB
+  ##
   backend2_web:
     build:
       context: backend-akka-orientdb
@@ -39,9 +49,13 @@ services:
       - DB_PASSWORD=rootpwd
     depends_on:
       - "backend2_db"
+
   backend2_db:
     build:
       context: backend-akka-orientdb
       dockerfile: Dockerfile.db
     ports:
       - "2480:2480"
+    environment:
+      - ORIENTDB_ROOT_PASSWORD=rootpwd
+      - ORIENT_DB=/orientdb/databases/pocdb

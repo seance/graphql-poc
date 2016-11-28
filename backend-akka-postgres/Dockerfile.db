@@ -1,6 +1,4 @@
 FROM postgres:9
 MAINTAINER github/seance
 
-ENV POSTGRES_DB pocdb
-
 COPY db-bootstrap.sql /docker-entrypoint-initdb.d/

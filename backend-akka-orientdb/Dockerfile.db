@@ -3,9 +3,6 @@ MAINTAINER github/seance
 
 RUN mkdir -p /docker-entrypoint-initdb.d/
 
-ENV ORIENT_DB /orientdb/databases/pocdb
-ENV ORIENTDB_ROOT_PASSWORD rootpwd
-
 COPY db-entrypoint.sh /
 COPY db-bootstrap.osql /docker-entrypoint-initdb.d/
 
