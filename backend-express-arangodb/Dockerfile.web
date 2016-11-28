@@ -1,0 +1,6 @@
+FROM keymetrics/pm2-docker-alpine:latest
+MAINTAINER github/seance
+
+COPY . /app
+
+EXPOSE 8080

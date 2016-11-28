@@ -1,0 +1,29 @@
+{
+  "name": "backend-express-arangodb",
+  "version": "1.0.0",
+  "description": "Backend - Express, ArangoDB",
+  "main": "app/index.js",
+  "scripts": {
+    "start": "nodemon --exec babel-node -- app/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "github/seance",
+  "license": "ISC",
+  "dependencies": {
+    "arangojs": "^5.4.1",
+    "express": "^4.14.0",
+    "express-graphql": "^0.6.1",
+    "graphql": "^0.8.2",
+    "habitat": "^3.1.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-latest": "^6.16.0",
+    "nodemon": "^1.11.0"
+  },
+  "babel": {
+    "presets": [
+      "latest"
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+FROM arangodb:3.1
+MAINTAINER github/seance
+
+COPY db-entrypoint.sh /
+COPY db-bootstrap.js /docker-entrypoint-initdb.d/
+
+ENTRYPOINT ["/db-entrypoint.sh"]
+
+CMD ["arangod"]
