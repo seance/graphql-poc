@@ -34,13 +34,15 @@ case class Organic(
     name: String,
     favoriteWeapon: Option[Weapon],
     species: Species,
-    homePlanet: Planet,
-    kind: String = "organic") extends Character
+    homePlanet: Planet) extends Character {
+  override val kind: String = "organic"
+}
     
 case class Droid(
     id: Int,
     name: String,
     favoriteWeapon: Option[Weapon],
-    primaryFunction: DroidFunction,
-    kind: String = "droid") extends Character
+    primaryFunction: DroidFunction) extends Character {
+  override val kind: String = "droid"
+}
     
