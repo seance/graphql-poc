@@ -45,9 +45,9 @@ object WebServer extends App with Directives with PocSchema with PocQueries with
     ).asJson
   }
   
-  def executeGraphQL(query: String, vars: Json, opName: Option[String]): Future[(StatusCode, Json)] = {
+  def executeGraphQL(query: String, opName: Option[String], vars: Json): Future[(StatusCode, Json)] = {
     QueryParser.parse(query).map { queryDoc =>
-      Executor.execute(PocSchema, queryDoc, dbConfig.db, variables = vars, operationName = opName).map(OK -> _) recover {
+      Executor.execute(PocSchema, queryDoc, dbConfig.db, (), opName, vars).map(OK -> _) recover {
         case e: QueryAnalysisError => UnprocessableEntity -> e.resolveError
         case e: ErrorWithResolver => InternalServerError -> e.resolveError
       }
@@ -60,11 +60,11 @@ object WebServer extends App with Directives with PocSchema with PocQueries with
 
   val graphql = path("graphql") {
     get {
-      parameters("query", "variables"?, "operationName"?) { (query, varsOpt, opNameOpt) =>
+      parameters("query", "operationName"?, "variables"?) { (query, opNameOpt, varsOpt) =>
         val result = (for {
         	vars <- varsOpt.flatMap(parse(_).right.toOption) orElse Some(Json.obj())
         }
-        yield executeGraphQL(query, vars, opNameOpt)) getOrElse badQuery
+        yield executeGraphQL(query, opNameOpt, vars)) getOrElse badQuery
         complete(result)
       }
     } ~
@@ -72,10 +72,10 @@ object WebServer extends App with Directives with PocSchema with PocQueries with
       entity(as[Json]) { b =>
         val result = (for {
           query  <- queryT.getOption(b)
-          vars   <- variablesT.getOption(b) orElse Some(JsonObject.empty)
           opName <- Some(operationNameT.getOption(b))
+          vars   <- variablesT.getOption(b) orElse Some(JsonObject.empty)
         }
-        yield executeGraphQL(query, vars.asJson, opName)) getOrElse badQuery
+        yield executeGraphQL(query, opName, vars.asJson)) getOrElse badQuery
         complete(result)
       }
     }
