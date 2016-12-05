@@ -96,4 +96,3 @@ trait PocDatabase {
         r => r.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Restrict)
   }
 }
-

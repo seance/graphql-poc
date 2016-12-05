@@ -3,8 +3,10 @@ package poc
 import poc.schema._
 import poc.queries._
 import poc.database._
-import io.circe.Json
+import io.circe._
+import io.circe.parser._
 import io.circe.syntax._
+import io.circe.optics._
 import sangria.parser._
 import sangria.execution._
 import sangria.marshalling.circe._
@@ -33,15 +35,19 @@ object WebServer extends App with Directives with PocSchema with PocQueries with
   
   val dbConfig = DatabaseConfig.forConfig[JdbcProfile]("database")
   
+  val queryT = JsonPath.root.query.string
+  val variablesT = JsonPath.root.variables.obj
+  val operationNameT = JsonPath.root.operationName.string
+  
   def badQuery = Future.successful {
     BadRequest -> Map(
       "errors" -> Seq(Map("message" -> s"Unparseable query"))
     ).asJson
   }
   
-  def executeGraphQL(query: String): Future[(StatusCode, Json)] = {
+  def executeGraphQL(query: String, vars: Json, opName: Option[String]): Future[(StatusCode, Json)] = {
     QueryParser.parse(query).map { queryDoc =>
-      Executor.execute(PocSchema, queryDoc, dbConfig.db).map(OK -> _) recover {
+      Executor.execute(PocSchema, queryDoc, dbConfig.db, variables = vars, operationName = opName).map(OK -> _) recover {
         case e: QueryAnalysisError => UnprocessableEntity -> e.resolveError
         case e: ErrorWithResolver => InternalServerError -> e.resolveError
       }
@@ -54,15 +60,23 @@ object WebServer extends App with Directives with PocSchema with PocQueries with
 
   val graphql = path("graphql") {
     get {
-      parameter("query") { query =>
-        complete(executeGraphQL(query))
+      parameters("query", "variables"?, "operationName"?) { (query, varsOpt, opNameOpt) =>
+        val result = (for {
+        	vars <- varsOpt.flatMap(parse(_).right.toOption) orElse Some(Json.obj())
+        }
+        yield executeGraphQL(query, vars, opNameOpt)) getOrElse badQuery
+        complete(result)
       }
     } ~
     post {
       entity(as[Json]) { b =>
-        complete(b.cursor.get[String]("query").fold(
-            _ => badQuery,
-            executeGraphQL))
+        val result = (for {
+          query  <- queryT.getOption(b)
+          vars   <- variablesT.getOption(b) orElse Some(JsonObject.empty)
+          opName <- Some(operationNameT.getOption(b))
+        }
+        yield executeGraphQL(query, vars.asJson, opName)) getOrElse badQuery
+        complete(result)
       }
     }
   }

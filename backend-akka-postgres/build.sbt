@@ -20,6 +20,8 @@ libraryDependencies ++= Seq(
   "de.heikoseeberger" %% "akka-http-circe" % "1.11.0-M1",
   "org.sangria-graphql" %% "sangria" % "1.0.0-RC3",
   "org.sangria-graphql" %% "sangria-circe" % "0.6.0",
+  "io.circe" %% "circe-parser" % "0.6.0",
+  "io.circe" %% "circe-optics" % "0.6.0",
   "com.typesafe.slick" %% "slick" % "3.1.1",
   "com.typesafe.slick" %% "slick-hikaricp" % "3.1.1",
   "org.slf4j" % "slf4j-nop" % "1.6.4",
