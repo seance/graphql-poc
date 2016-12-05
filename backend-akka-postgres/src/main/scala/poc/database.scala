@@ -40,7 +40,8 @@ trait PocDatabase {
   class Planets(tag: Tag) extends Table[Planet](tag, "planets") {
     val id = column[Int]("id", O.PrimaryKey)
     val name = column[String]("name")
-    def * = (id, name) <> (Planet.tupled, Planet.unapply)
+    val ecology = column[String]("ecology")
+    def * = (id, name, ecology) <> (Planet.tupled, Planet.unapply)
   }
   
   class Characters(tag: Tag) extends Table[CharactersDto](tag, "characters") {
@@ -95,3 +96,4 @@ trait PocDatabase {
         r => r.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Restrict)
   }
 }
+

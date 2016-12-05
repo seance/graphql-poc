@@ -11,8 +11,9 @@ CREATE TABLE species (
 );
 
 CREATE TABLE planets (
-  id    INTEGER PRIMARY KEY,
-  name  VARCHAR NOT NULL UNIQUE
+  id      INTEGER PRIMARY KEY,
+  name    VARCHAR NOT NULL UNIQUE,
+  ecology VARCHAR NOT NULL
 );
 
 CREATE TABLE characters (
@@ -39,7 +40,7 @@ CREATE TABLE characters_droids (
 );
 
 CREATE TABLE character_associations (
-  target_id  INTEGER NOT NULL REFERENCES characters (id),
+  target_id INTEGER NOT NULL REFERENCES characters (id),
   source_id INTEGER NOT NULL REFERENCES characters (id),
   relation  VARCHAR NOT NULL,
   CHECK (target_id != source_id),
@@ -66,16 +67,16 @@ INSERT INTO species (id, name) VALUES
   (3, 'Mon Calamari'),
   (4, 'Sullustan');
 
-INSERT INTO planets (id, name) VALUES
-  (1, 'Tatooine'),
-  (2, 'Alderaan'),
-  (3, 'Corellia'),
-  (4, 'Kashyyyk'),
-  (5, 'Socorro'),
-  (6, 'Dac'),
-  (7, 'Sullust'),
-  (8, 'Naboo'),
-  (9, 'Kamino');
+INSERT INTO planets (id, name, ecology) VALUES
+  (1, 'Tatooine', 'Desert'),
+  (2, 'Alderaan', 'Temperate'),
+  (3, 'Corellia', 'Urban'),
+  (4, 'Kashyyyk', 'Forested'),
+  (5, 'Socorro', 'Desert'),
+  (6, 'Dac', 'Aquatic'),
+  (7, 'Sullust', 'Volcanic'),
+  (8, 'Naboo', 'Temperate'),
+  (9, 'Kamino', 'Aquatic');
 
 INSERT INTO characters (id, kind, name, favorite_weapon_id) VALUES
   (1, 'organic', 'Luke Skywalker', 1),

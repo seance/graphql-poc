@@ -1,6 +1,7 @@
 package poc
 
 import poc.schema._
+import poc.queries._
 import poc.database._
 import io.circe.Json
 import io.circe.syntax._
@@ -22,7 +23,7 @@ import scala.concurrent.Future
 import scala.util._
 import scala.io._
 
-object WebServer extends App with Directives with PocSchema with PocDatabase {
+object WebServer extends App with Directives with PocSchema with PocQueries with PocDatabase {
 
   val config = ConfigFactory.load()
   

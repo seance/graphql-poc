@@ -1,81 +1,14 @@
 package poc.schema
 
 import poc.models._
+import poc.queries._
 import poc.database._
 import sangria.schema._
 import scala.concurrent._
 
-trait PocSchema { self: PocDatabase =>
-  
-  implicit val executionContext: ExecutionContext
+trait PocSchema { self: PocDatabase with PocQueries =>
   
   import dbConfig.driver.api._
-  
-  def queryAssociates(characterId: Int) = for {
-    a <- CharacterAssociations if a.targetId === characterId
-    (c, w) <- Characters
-      .joinLeft(Weapons).on(_.favoriteWeaponId === _.id)
-      if a.sourceId === c.id
-    (((co, o), s), p) <- Characters
-      .joinLeft(Organics).on(_.id === _.id)
-      .joinLeft(Species).on(_._2.map(_.speciesId) === _.id)
-      .joinLeft(Planets).on(_._1._2.map(_.homePlanetId) === _.id)
-      if c.id === co.id
-    (cd, d) <- Characters
-      .joinLeft(Droids).on(_.id === _.id)
-      if c.id === cd.id
-  }
-  yield (c, w, o, s, p, d, a.relation)
-  
-  def queryEpisodes(characterId: Int) = for {
-    e <- CharacterEpisodes if e.characterId === characterId
-  }
-  yield e
-  
-  def queryOrganics() = for {
-    (c, w) <- Characters.joinLeft(Weapons).on(_.favoriteWeaponId === _.id)
-    o <- Organics if c.id === o.id
-    s <- Species if o.speciesId === s.id
-    p <- Planets if o.homePlanetId === p.id
-  }
-  yield (c, w, s, p)
-  
-  def queryDroids() = for {
-    (c, w) <- Characters.joinLeft(Weapons).on(_.favoriteWeaponId === _.id)
-    d <- Droids if c.id === d.id
-  }
-  yield (c, w, d)
-  
-  def findAssociates(db: Database)(characterId: Int) = {
-    db.run(queryAssociates(characterId).result).map(_.map { case (c, w, o, s, p, d, rel) =>
-      Association(o.toRight(d.get).fold(
-          d => Droid(c.id, c.name, w, DroidFunction(d.primaryFunction)),
-          o => Organic(c.id, c.name, w, s.get, p.get)),
-          rel)
-    })
-  }
-  
-  def findEpisodes(db: Database)(characterId: Int) = {
-    db.run(queryEpisodes(characterId).result).map(_.map(e => Episode(e.episode)))
-  }
-  
-  def findOrganics(db: Database): Future[Seq[Organic]] = {
-    db.run(queryOrganics.result).map(_.map { case (c, w, s, p) =>
-      Organic(c.id, c.name, w, s, p)
-    })
-  }
-  
-  def findDroids(db: Database): Future[Seq[Droid]] = {
-    db.run(queryDroids.result).map(_.map { case (c, w, d) =>
-      Droid(c.id, c.name, w, DroidFunction(d.primaryFunction))
-    })
-  }
-  
-  def findCharacters(db: Database): Future[Seq[Character]] = for {
-    os <- findOrganics(db)
-    ds <- findDroids(db)
-  }
-  yield os ++ ds
       
   val EpisodeType = EnumType(
       "Episode",
@@ -97,13 +30,17 @@ trait PocSchema { self: PocDatabase =>
       Field("id", IDType, resolve = _.value.id.toString),
       Field("name", StringType, resolve = _.value.name)))
   
-  val PlanetType = ObjectType("Planet", fields[Database, Planet](
+  val PlanetType: ObjectType[Database, Planet] = ObjectType("Planet", () => fields[Database, Planet](
       Field("id", IDType, resolve = _.value.id.toString),
-      Field("name", StringType, resolve = _.value.name)))
+      Field("name", StringType, resolve = _.value.name),
+      Field("ecology", StringType, resolve = _.value.ecology),
+      Field("species", ListType(SpeciesType), resolve = c => findSpeciesByPlanet(c.ctx)(c.value.id)),
+      Field("natives", ListType(OrganicType), resolve = c => findNativesByPlanet(c.ctx)(c.value.id))))
       
-  val SpeciesType = ObjectType("Species", fields[Database, poc.models.Species](
+  val SpeciesType = ObjectType("Species", () => fields[Database, poc.models.Species](
       Field("id", IDType, resolve = _.value.id.toString),
-      Field("name", StringType, resolve = _.value.name)))
+      Field("name", StringType, resolve = _.value.name),
+      Field("planets", ListType(PlanetType), resolve = c => findPlanetsBySpecies(c.ctx)(c.value.id))))
       
   val AssociationType = ObjectType("Association", () => fields[Database, Association](
       Field("character", CharacterType, resolve = _.value.character),
@@ -114,17 +51,19 @@ trait PocSchema { self: PocDatabase =>
       "A character in the Star Wars universe",
       () => fields[Database, Character](
           Field("id", IDType, resolve = _.value.id.toString),
+          Field("kind", StringType, resolve = _.value.kind),
           Field("name", StringType, resolve = _.value.name),
           Field("associates", ListType(AssociationType), resolve = c => findAssociates(c.ctx)(c.value.id)),
           Field("appearsIn", ListType(EpisodeType), resolve = c => findEpisodes(c.ctx)(c.value.id)),
           Field("favoriteWeapon", OptionType(WeaponType), resolve = _.value.favoriteWeapon)))
           
-  val OrganicType = ObjectType(
+  val OrganicType: ObjectType[Database, Organic] = ObjectType(
       "Organic",
       "A non-mechanical character, e.g. human, wookiee...",
       interfaces[Database, Organic](CharacterType),
-      fields[Database, Organic](
+      () => fields[Database, Organic](
           Field("id", IDType, resolve = _.value.id.toString),
+          Field("kind", StringType, resolve = _.value.kind),
           Field("name", StringType, resolve = _.value.name),
           Field("associates", ListType(AssociationType), resolve = c => findAssociates(c.ctx)(c.value.id)),
           Field("appearsIn", ListType(EpisodeType), resolve = c => findEpisodes(c.ctx)(c.value.id)),
@@ -132,12 +71,13 @@ trait PocSchema { self: PocDatabase =>
           Field("species", SpeciesType, resolve = _.value.species),
           Field("homePlanet", PlanetType, resolve = _.value.homePlanet)))
       
-  val DroidType = ObjectType(
+  val DroidType : ObjectType[Database, Droid]= ObjectType(
       "Droid",
       "A mechanical character",
       interfaces[Database, Droid](CharacterType),
       fields[Database, Droid](
           Field("id", IDType, resolve = _.value.id.toString),
+          Field("kind", StringType, resolve = _.value.kind),
           Field("name", StringType, resolve = _.value.name),
           Field("associates", ListType(AssociationType), resolve = c => findAssociates(c.ctx)(c.value.id)),
           Field("appearsIn", ListType(EpisodeType), resolve = c => findEpisodes(c.ctx)(c.value.id)),
@@ -145,9 +85,26 @@ trait PocSchema { self: PocDatabase =>
           Field("primaryFunction", DroidFunctionType, resolve = _.value.primaryFunction)))
 
   val QueryType = ObjectType("Query", fields[Database, Unit](
-      Field("characters", ListType(CharacterType), resolve = c => findCharacters(c.ctx)),
-      Field("organics", ListType(OrganicType), resolve = c => findOrganics(c.ctx)),
-      Field("droids", ListType(DroidType), resolve = c => findDroids(c.ctx))))
+      Field("characters",
+          ListType(CharacterType),
+          Some("List characters from the Star Wars universe"),
+          resolve = c => findCharacters(c.ctx)),
+      Field("organics",
+          ListType(OrganicType),
+          Some("List non-mechanical characters"),
+          resolve = c => findOrganics(c.ctx)),
+      Field("droids",
+          ListType(DroidType),
+          Some("List mechanical characters"),
+          resolve = c => findDroids(c.ctx)),
+      Field("planets",
+          ListType(PlanetType),
+          Some("List known planets"),
+          resolve = c => findPlanets(c.ctx)),
+      Field("species",
+          ListType(SpeciesType),
+          Some("List known species"),
+          resolve = c => findSpecies(c.ctx))))
       
   val PocSchema = Schema(QueryType)
 }
