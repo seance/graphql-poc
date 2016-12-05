@@ -83,20 +83,25 @@ trait PocSchema { self: PocDatabase with PocQueries =>
           Field("appearsIn", ListType(EpisodeType), resolve = c => findEpisodes(c.ctx)(c.value.id)),
           Field("favoriteWeapon", OptionType(WeaponType), resolve = _.value.favoriteWeapon),
           Field("primaryFunction", DroidFunctionType, resolve = _.value.primaryFunction)))
+          
+  val EpisodeArg = Argument("episode", OptionInputType(EpisodeType), "Optionally limit query to an episode")
 
   val QueryType = ObjectType("Query", fields[Database, Unit](
       Field("characters",
           ListType(CharacterType),
           Some("List characters from the Star Wars universe"),
-          resolve = c => findCharacters(c.ctx)),
+          arguments = EpisodeArg :: Nil,
+          resolve = c => findCharacters(c.ctx)(c.arg(EpisodeArg))),
       Field("organics",
           ListType(OrganicType),
           Some("List non-mechanical characters"),
-          resolve = c => findOrganics(c.ctx)),
+          arguments = EpisodeArg :: Nil,
+          resolve = c => findOrganics(c.ctx)(c.arg(EpisodeArg))),
       Field("droids",
           ListType(DroidType),
           Some("List mechanical characters"),
-          resolve = c => findDroids(c.ctx)),
+          arguments = EpisodeArg :: Nil,
+          resolve = c => findDroids(c.ctx)(c.arg(EpisodeArg))),
       Field("planets",
           ListType(PlanetType),
           Some("List known planets"),

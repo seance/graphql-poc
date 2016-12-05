@@ -40,9 +40,21 @@ trait PocQueries { self: PocDatabase =>
   }
   yield (c, w, s, p)
   
+  def queryOrganicsByEpisode(ep: Episode) = for {
+    e <- CharacterEpisodes if e.episode === ep.id
+    (c, w, s, p) <- queryOrganics if c.id === e.characterId
+  }
+  yield (c, w, s, p)
+  
   def queryDroids() = for {
     (c, w) <- Characters.joinLeft(Weapons).on(_.favoriteWeaponId === _.id)
     d <- Droids if c.id === d.id
+  }
+  yield (c, w, d)
+  
+  def queryDroidsByEpisode(ep: Episode) = for {
+    e <- CharacterEpisodes if e.episode === ep.id
+    (c, w, d) <- queryDroids if c.id === e.characterId
   }
   yield (c, w, d)
   
@@ -89,20 +101,20 @@ trait PocQueries { self: PocDatabase =>
     db.run(queryEpisodes(characterId).result).map(_.map(e => Episode(e.episode)))
   }
   
-  def findOrganics(db: Database): Future[Seq[Organic]] = {
-    db.run(queryOrganics().result).map(_.map { case (c, w, s, p) =>
+  def findOrganics(db: Database)(ep: Option[Episode]): Future[Seq[Organic]] = {
+    db.run(ep.map(queryOrganicsByEpisode).getOrElse(queryOrganics).result).map(_.map { case (c, w, s, p) =>
       Organic(c.id, c.name, w, s, p)
     })
   }
   
-  def findDroids(db: Database): Future[Seq[Droid]] = {
-    db.run(queryDroids.result).map(_.map { case (c, w, d) =>
+  def findDroids(db: Database)(ep: Option[Episode]): Future[Seq[Droid]] = {
+    db.run(ep.map(queryDroidsByEpisode).getOrElse(queryDroids).result).map(_.map { case (c, w, d) =>
       Droid(c.id, c.name, w, DroidFunction(d.primaryFunction))
     })
   }
   
-  def findCharacters(db: Database): Future[Seq[Character]] =
-    Future.reduce(findOrganics(db) :: findDroids(db) :: Nil)(_ ++ _)
+  def findCharacters(db: Database)(ep: Option[Episode]): Future[Seq[Character]] =
+    Future.reduce(findOrganics(db)(ep) :: findDroids(db)(ep) :: Nil)(_ ++ _)
   
   def findSpeciesByPlanet(db: Database)(planetId: Int) = {
     db.run(querySpeciesByPlanet(planetId).distinct.result)
