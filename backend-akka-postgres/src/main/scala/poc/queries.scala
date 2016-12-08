@@ -11,10 +11,12 @@ trait PocQueries { self: PocDatabase =>
   import dbConfig.driver.api._
   import Episode._
   
+  def queryCharacters() =
+    Characters.joinLeft(Weapons).on(_.favoriteWeaponId === _.id)
+  
   def queryAssociates(characterId: Int) = for {
     a <- CharacterAssociations if a.targetId === characterId
-    (c, w) <- Characters
-      .joinLeft(Weapons).on(_.favoriteWeaponId === _.id)
+    (c, w) <- queryCharacters
       if a.sourceId === c.id
     (((co, o), s), p) <- Characters
       .joinLeft(Organics).on(_.id === _.id)
@@ -33,7 +35,7 @@ trait PocQueries { self: PocDatabase =>
   yield e
   
   def queryOrganics() = for {
-    (c, w) <- Characters.joinLeft(Weapons).on(_.favoriteWeaponId === _.id)
+    (c, w) <- queryCharacters
     o <- Organics if c.id === o.id
     s <- Species if o.speciesId === s.id
     p <- Planets if o.homePlanetId === p.id
@@ -47,7 +49,7 @@ trait PocQueries { self: PocDatabase =>
   yield (c, w, s, p)
   
   def queryDroids() = for {
-    (c, w) <- Characters.joinLeft(Weapons).on(_.favoriteWeaponId === _.id)
+    (c, w) <- queryCharacters
     d <- Droids if c.id === d.id
   }
   yield (c, w, d)
@@ -65,7 +67,7 @@ trait PocQueries { self: PocDatabase =>
   yield s
   
   def queryNativesByPlanet(planetId: Int) = for {
-    (c, w) <- Characters.joinLeft(Weapons).on(_.favoriteWeaponId === _.id) 
+    (c, w) <- queryCharacters
     o <- Organics if c.id === o.id && o.homePlanetId === planetId
     s <- Species if s.id === o.speciesId
     p <- Planets if p.id === o.homePlanetId
