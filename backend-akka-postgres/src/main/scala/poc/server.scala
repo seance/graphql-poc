@@ -82,7 +82,7 @@ object WebServer extends App with Directives with PocSchema with PocQueries with
   }
   
   val graphiql = (path("graphiql") & get) {
-    getFromResource("assets/graphiql.html")
+    getFromResource("assets/graphiql.html", `text/html(UTF-8)`)
   }
   
   val assets = (pathPrefix("assets") & get) {
