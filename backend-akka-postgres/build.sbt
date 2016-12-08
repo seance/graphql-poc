@@ -27,3 +27,9 @@ libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-nop" % "1.6.4",
   "org.postgresql" % "postgresql" % "9.4.1211",
   "commons-lang" % "commons-lang" % "2.6")
+  
+def oneJarMappings(path: String) = (file(path) ** "*.*").get.map { f =>
+  f -> f.getPath.replaceFirst(s"$path/", "")
+}
+
+mappings in oneJar ++= oneJarMappings("src/main/resources")
