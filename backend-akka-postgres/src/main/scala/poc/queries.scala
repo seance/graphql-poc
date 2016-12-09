@@ -90,6 +90,11 @@ trait PocQueries { self: PocDatabase =>
   }
   yield s
   
+  def queryComments() = for {
+    c <- CharacterComments
+  }
+  yield c
+  
   def findAssociates(db: Database)(characterId: Int) = {
     db.run(queryAssociates(characterId).result).map(_.map { case (c, w, o, s, p, d, rel) =>
       Association(o.toRight(d.get).fold(
@@ -138,5 +143,14 @@ trait PocQueries { self: PocDatabase =>
   
   def findSpecies(db: Database) = {
     db.run(querySpecies.result)
+  }
+  
+  def findComments(db: Database) = {
+    db.run(queryComments.result)
+  }
+  
+  def addComment(db: Database)(commenterId: String, commenteeId: String, replyToId: Option[String], comment: String) = {
+    val c = Comment(0, commenterId.toInt, commenteeId.toInt, replyToId.map(_.toInt), comment)
+    db.run(CharacterComments.returning(CharacterComments) += c)
   }
 }

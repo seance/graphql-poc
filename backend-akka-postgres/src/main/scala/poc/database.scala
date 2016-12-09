@@ -18,6 +18,7 @@ trait PocDatabase {
   lazy val Droids = new TableQuery(new Droids(_))
   lazy val CharacterAssociations = new TableQuery(new CharacterAssociations(_))
   lazy val CharacterEpisodes = new TableQuery(new CharacterEpisodes(_))
+  lazy val CharacterComments = new TableQuery(new CharacterComments(_))
   
   case class CharEpisodeDto(characterId: Int, episode: Int)
   case class CharAssociationDto(targetId: Int, sourceId: Int, relation: String)
@@ -93,6 +94,20 @@ trait PocDatabase {
     def * = (characterId, episode) <> (CharEpisodeDto.tupled, CharEpisodeDto.unapply)
     
     lazy val characterIdFk = foreignKey("fk_character_id", characterId, Characters)(
+        r => r.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Restrict)
+  }
+  
+  class CharacterComments(tag: Tag) extends Table[Comment](tag, "character_comments") {
+    val id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    val commenterId = column[Int]("commenter_id")
+    val commenteeId = column[Int]("commentee_id")
+    val replyToId = column[Option[Int]]("reply_to_id")
+    val comment = column[String]("comment")
+    def * = (id, commenterId, commenteeId, replyToId, comment) <> (Comment.tupled, Comment.unapply)
+    
+    lazy val commenterIdFk = foreignKey("fk_commenter_id", commenterId, Characters)(
+        r => r.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Restrict)
+    lazy val commenteeIdFk = foreignKey("fk_commentee_id", commenteeId, Characters)(
         r => r.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Restrict)
   }
 }

@@ -21,6 +21,7 @@ case class Weapon(id: Int, name: String)
 case class Planet(id: Int, name: String, ecology: String)
 case class Species(id: Int, name: String)
 case class Association(character: Character, relation: String)
+case class Comment(id: Int, commenterId: Int, commenteeId: Int, replyToId: Option[Int], comment: String)
 
 trait Character {
   val id: Int

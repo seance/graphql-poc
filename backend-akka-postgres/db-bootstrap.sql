@@ -53,6 +53,14 @@ CREATE TABLE character_episodes (
   UNIQUE (character_id, episode)
 );
 
+CREATE TABLE character_comments (
+  id            SERIAL PRIMARY KEY,
+  commenter_id  INTEGER NOT NULL REFERENCES characters (id),
+  commentee_id  INTEGER NOT NULL REFERENCES characters (id),
+  reply_to_id   INTEGER REFERENCES character_comments (id),
+  comment       VARCHAR NOT NULL
+);
+
 -- Data
 
 INSERT INTO weapons (id, name) VALUES

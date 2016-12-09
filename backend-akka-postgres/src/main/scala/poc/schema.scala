@@ -71,7 +71,7 @@ trait PocSchema { self: PocDatabase with PocQueries =>
           Field("species", SpeciesType, resolve = _.value.species),
           Field("homePlanet", PlanetType, resolve = _.value.homePlanet)))
       
-  val DroidType : ObjectType[Database, Droid]= ObjectType(
+  val DroidType: ObjectType[Database, Droid] = ObjectType(
       "Droid",
       "A mechanical character",
       interfaces[Database, Droid](CharacterType),
@@ -84,8 +84,32 @@ trait PocSchema { self: PocDatabase with PocQueries =>
           Field("favoriteWeapon", OptionType(WeaponType), resolve = _.value.favoriteWeapon),
           Field("primaryFunction", DroidFunctionType, resolve = _.value.primaryFunction)))
           
+  val CommentType = ObjectType(
+      "CharacterComment",
+      "A comment from one character to another",
+      fields[Database, Comment](
+          Field("id", IDType, resolve = _.value.id.toString),
+          Field("commenterId", IDType, resolve = _.value.commenterId.toString),
+          Field("commenteeId", IDType, resolve = _.value.commenteeId.toString),
+          Field("replyToId", OptionType(IDType), resolve = _.value.replyToId.map(_.toString)),
+          Field("comment", StringType, resolve = _.value.comment)))
+          
   val EpisodeArg = Argument("episode", OptionInputType(EpisodeType), "Optionally limit query to an episode")
-
+  val CommenterIdArg = Argument("commenterId", IDType, "Character id of commenter")
+  val CommenteeIdArg = Argument("commenteeId", IDType, "Character id of commentee")
+  val ReplyToIdArg = Argument("replyToId", OptionInputType(IDType), "Optional parent comment id")
+  val CommentArg = Argument("comment", StringType, "Comment content")
+  
+  val MutationType = ObjectType("Mutation", fields[Database, Unit](
+      Field("addComment",
+          CommentType,
+          arguments = CommenterIdArg :: CommenteeIdArg :: ReplyToIdArg :: CommentArg :: Nil,
+          resolve = c => addComment(c.ctx)(
+              c arg CommenterIdArg,
+              c arg CommenteeIdArg,
+              c arg ReplyToIdArg,
+              c arg CommentArg))))
+  
   val QueryType = ObjectType("Query", fields[Database, Unit](
       Field("characters",
           ListType(CharacterType),
@@ -109,7 +133,11 @@ trait PocSchema { self: PocDatabase with PocQueries =>
       Field("species",
           ListType(SpeciesType),
           Some("List known species"),
-          resolve = c => findSpecies(c.ctx))))
+          resolve = c => findSpecies(c.ctx)),
+      Field("comments",
+          ListType(CommentType),
+          Some("Comments between characters"),
+          resolve = c => findComments(c.ctx))))
       
-  val PocSchema = Schema(QueryType)
+  val PocSchema = Schema(QueryType, Some(MutationType))
 }
