@@ -22,9 +22,9 @@ trait PocDatabase {
   
   case class CharEpisodeDto(characterId: Int, episode: Int)
   case class CharAssociationDto(targetId: Int, sourceId: Int, relation: String)
-  case class CharactersDto(id: Int, kind: String, name: String, favoriteWeaponId: Option[Int])
-  case class OrganicsDto(id: Int, kind: String, speciesId: Int, homePlanetId: Int)
-  case class DroidsDto(id: Int, kind: String, primaryFunction: Int)
+  case class CharacterDto(id: Int, kind: String, name: String, favoriteWeaponId: Option[Int])
+  case class OrganicDto(id: Int, kind: String, speciesId: Int, homePlanetId: Int)
+  case class DroidDto(id: Int, kind: String, primaryFunction: Int)
   
   class Weapons(tag: Tag) extends Table[Weapon](tag, "weapons") {
     val id = column[Int]("id", O.PrimaryKey)
@@ -45,23 +45,23 @@ trait PocDatabase {
     def * = (id, name, ecology) <> (Planet.tupled, Planet.unapply)
   }
   
-  class Characters(tag: Tag) extends Table[CharactersDto](tag, "characters") {
+  class Characters(tag: Tag) extends Table[CharacterDto](tag, "characters") {
     val id = column[Int]("id", O.PrimaryKey)
     val kind = column[String]("kind")
     val name = column[String]("name")
     val favoriteWeaponId = column[Option[Int]]("favorite_weapon_id")
-    def * = (id, kind, name, favoriteWeaponId) <> (CharactersDto.tupled, CharactersDto.unapply)
+    def * = (id, kind, name, favoriteWeaponId) <> (CharacterDto.tupled, CharacterDto.unapply)
     
     lazy val favoriteWeaponIdFk = foreignKey("fk_favorite_weapon_id", favoriteWeaponId, Weapons)(
         r => r.id.?, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Restrict)
   }
   
-  class Organics(tag: Tag) extends Table[OrganicsDto](tag, "characters_organics") {
+  class Organics(tag: Tag) extends Table[OrganicDto](tag, "characters_organics") {
     val id = column[Int]("id", O.PrimaryKey)
     val kind = column[String]("kind")
     val speciesId = column[Int]("species_id")
     val homePlanetId = column[Int]("home_planet_id")
-    def * = (id, kind, speciesId, homePlanetId) <> (OrganicsDto.tupled, OrganicsDto.unapply)
+    def * = (id, kind, speciesId, homePlanetId) <> (OrganicDto.tupled, OrganicDto.unapply)
     
     lazy val speciesIdFk = foreignKey("fk_species_id", speciesId, Species)(
         r => r.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Restrict)
@@ -69,11 +69,11 @@ trait PocDatabase {
         r => r.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Restrict)
   }
   
-  class Droids(tag: Tag) extends Table[DroidsDto](tag, "characters_droids") {
+  class Droids(tag: Tag) extends Table[DroidDto](tag, "characters_droids") {
     val id = column[Int]("id", O.PrimaryKey)
     val kind = column[String]("kind")
     val primaryFunction = column[Int]("primary_function")
-    def * = (id, kind, primaryFunction) <> (DroidsDto.tupled, DroidsDto.unapply)
+    def * = (id, kind, primaryFunction) <> (DroidDto.tupled, DroidDto.unapply)
   }
   
   class CharacterAssociations(tag: Tag) extends Table[CharAssociationDto](tag, "character_associations") {

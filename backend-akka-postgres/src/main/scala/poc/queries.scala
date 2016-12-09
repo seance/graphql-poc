@@ -11,13 +11,24 @@ trait PocQueries { self: PocDatabase =>
   import dbConfig.driver.api._
   import Episode._
   
+  def mapCharacterPolymorphic(
+      c: CharacterDto,
+      w: Option[Weapon],
+      o: Option[OrganicDto],
+      s: Option[poc.models.Species],
+      p: Option[Planet],
+      d: Option[DroidDto]): Character =
+  {
+    o.toRight(d.get).fold(
+        d => Droid(c.id, c.name, w, DroidFunction(d.primaryFunction)),
+        o => Organic(c.id, c.name, w, s.get, p.get))
+  }
+  
   def queryCharacters() =
     Characters.joinLeft(Weapons).on(_.favoriteWeaponId === _.id)
-  
-  def queryAssociates(characterId: Int) = for {
-    a <- CharacterAssociations if a.targetId === characterId
+    
+  def queryCharactersPolymorphic() = for {
     (c, w) <- queryCharacters
-      if a.sourceId === c.id
     (((co, o), s), p) <- Characters
       .joinLeft(Organics).on(_.id === _.id)
       .joinLeft(Species).on(_._2.map(_.speciesId) === _.id)
@@ -27,7 +38,16 @@ trait PocQueries { self: PocDatabase =>
       .joinLeft(Droids).on(_.id === _.id)
       if c.id === cd.id
   }
-  yield (c, w, o, s, p, d, a.relation)
+  yield (c, w, o, s, p, d)
+    
+  def queryCharacterPolymorphic(characterId: Int) =
+    queryCharactersPolymorphic.filter(_._1.id === characterId)
+  
+  def queryAssociates(characterId: Int) = for {
+    a <- CharacterAssociations if a.targetId === characterId
+    c <- queryCharactersPolymorphic if a.sourceId === c._1.id
+  }
+  yield (c, a.relation)
   
   def queryEpisodes(characterId: Int) = for {
     e <- CharacterEpisodes if e.characterId === characterId
@@ -96,11 +116,8 @@ trait PocQueries { self: PocDatabase =>
   yield c
   
   def findAssociates(db: Database)(characterId: Int) = {
-    db.run(queryAssociates(characterId).result).map(_.map { case (c, w, o, s, p, d, rel) =>
-      Association(o.toRight(d.get).fold(
-          d => Droid(c.id, c.name, w, DroidFunction(d.primaryFunction)),
-          o => Organic(c.id, c.name, w, s.get, p.get)),
-          rel)
+    db.run(queryAssociates(characterId).result).map(_.map { case (c, rel) =>
+      Association(mapCharacterPolymorphic _ tupled c, rel)
     })
   }
   
@@ -122,6 +139,9 @@ trait PocQueries { self: PocDatabase =>
   
   def findCharacters(db: Database)(ep: Option[Episode]): Future[Seq[Character]] =
     Future.reduce(findOrganics(db)(ep) :: findDroids(db)(ep) :: Nil)(_ ++ _)
+    
+  def findCharacter(db: Database)(characterId: Int) =
+    db.run(queryCharacterPolymorphic(characterId).result.head.map(mapCharacterPolymorphic _ tupled))
   
   def findSpeciesByPlanet(db: Database)(planetId: Int) = {
     db.run(querySpeciesByPlanet(planetId).distinct.result)

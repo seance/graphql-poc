@@ -85,12 +85,12 @@ trait PocSchema { self: PocDatabase with PocQueries =>
           Field("primaryFunction", DroidFunctionType, resolve = _.value.primaryFunction)))
           
   val CommentType = ObjectType(
-      "CharacterComment",
+      "Comment",
       "A comment from one character to another",
       fields[Database, Comment](
           Field("id", IDType, resolve = _.value.id.toString),
-          Field("commenterId", IDType, resolve = _.value.commenterId.toString),
-          Field("commenteeId", IDType, resolve = _.value.commenteeId.toString),
+          Field("commenter", CharacterType, resolve = c => findCharacter(c.ctx)(c.value.commenterId)),
+          Field("commentee", CharacterType, resolve = c => findCharacter(c.ctx)(c.value.commenteeId)),
           Field("replyToId", OptionType(IDType), resolve = _.value.replyToId.map(_.toString)),
           Field("comment", StringType, resolve = _.value.comment)))
           
