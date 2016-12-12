@@ -7,6 +7,7 @@ import sangria.schema._
 import sangria.marshalling.circe._
 import io.circe._
 import io.circe.generic.semiauto._
+import scalaz.syntax.id._
 import scala.concurrent._
 
 trait PocSchema { self: PocDatabase with PocQueries =>
@@ -117,9 +118,12 @@ trait PocSchema { self: PocDatabase with PocQueries =>
       Field("addComment",
           CommentType,
           arguments = CommentInputArg :: Nil,
-          resolve = c => {
-            val x = c arg CommentInputArg
-            addComment(c.ctx)(x.commenterId.toInt, x.commenteeId.toInt, x.replyToId.map(_.toInt), x.comment)
+          resolve = c => (c arg CommentInputArg) |> { ci =>
+            addComment(c.ctx)(
+                ci.commenterId.toInt,
+                ci.commenteeId.toInt,
+                ci.replyToId.map(_.toInt),
+                ci.comment)
           })))
           
   val QueryType = ObjectType("Query", fields[Database, Unit](
