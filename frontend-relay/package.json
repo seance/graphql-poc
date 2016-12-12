@@ -6,7 +6,9 @@
   "scripts": {
     "clean": "n-clean app/bundle.js",
     "build-js": "npm run clean && browserify app/scripts/index.js -o app/bundle.js",
-    "serve": "n-run 'nodemon server.js'",
+    "watch": "n-run 'npm run watch-js'",
+    "watch-js": "n-run -w 'app/scripts/**/*.js' 'npm run build-js'",
+    "serve": "n-run 'npm run watch' 'nodemon server.js'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "github/seance",
@@ -35,6 +37,9 @@
     ]
   },
   "dependencies": {
+    "es6-promise": "^4.0.5",
+    "graphql-tag": "^1.1.2",
+    "isomorphic-fetch": "^2.2.1",
     "react": "^15.4.1",
     "react-dom": "^15.4.1"
   }
