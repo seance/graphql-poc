@@ -169,8 +169,8 @@ trait PocQueries { self: PocDatabase =>
     db.run(queryComments.result)
   }
   
-  def addComment(db: Database)(commenterId: String, commenteeId: String, replyToId: Option[String], comment: String) = {
-    val c = Comment(0, commenterId.toInt, commenteeId.toInt, replyToId.map(_.toInt), comment)
+  def addComment(db: Database)(commenterId: Int, commenteeId: Int, replyToId: Option[Int], comment: String) = {
+    val c = Comment(0, commenterId, commenteeId, replyToId, comment)
     db.run(CharacterComments.returning(CharacterComments) += c)
   }
 }

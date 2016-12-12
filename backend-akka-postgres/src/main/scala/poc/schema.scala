@@ -4,6 +4,9 @@ import poc.models._
 import poc.queries._
 import poc.database._
 import sangria.schema._
+import sangria.marshalling.circe._
+import io.circe._
+import io.circe.generic.semiauto._
 import scala.concurrent._
 
 trait PocSchema { self: PocDatabase with PocQueries =>
@@ -93,23 +96,32 @@ trait PocSchema { self: PocDatabase with PocQueries =>
           Field("commentee", CharacterType, resolve = c => findCharacter(c.ctx)(c.value.commenteeId)),
           Field("replyToId", OptionType(IDType), resolve = _.value.replyToId.map(_.toString)),
           Field("comment", StringType, resolve = _.value.comment)))
-          
-  val EpisodeArg = Argument("episode", OptionInputType(EpisodeType), "Optionally limit query to an episode")
-  val CommenterIdArg = Argument("commenterId", IDType, "Character id of commenter")
-  val CommenteeIdArg = Argument("commenteeId", IDType, "Character id of commentee")
-  val ReplyToIdArg = Argument("replyToId", OptionInputType(IDType), "Optional parent comment id")
-  val CommentArg = Argument("comment", StringType, "Comment content")
+
+  case class CommentInput(commenterId: String, commenteeId: String, replyToId: Option[String], comment: String)
   
+  // sangria.macros.derive.deriveInputObjectType[CommentInput]
+  val CommentInputType = InputObjectType[CommentInput](
+      "CommentInput",
+      List(
+          InputField("commenterId", IDType, "Commenter character id"),
+          InputField("commenteeId", IDType, "Commentee character id"),
+          InputField("replyToId", OptionInputType(IDType), "Optional parent comment id"),
+          InputField("comment", StringType, "Comment content")))
+          
+  implicit val commentInputDecoder = deriveDecoder[CommentInput]
+  
+  val EpisodeArg = Argument("episode", OptionInputType(EpisodeType), "Optionally limit query to an episode")
+  val CommentInputArg = Argument("commentInput", CommentInputType, "Comment input")
+
   val MutationType = ObjectType("Mutation", fields[Database, Unit](
       Field("addComment",
           CommentType,
-          arguments = CommenterIdArg :: CommenteeIdArg :: ReplyToIdArg :: CommentArg :: Nil,
-          resolve = c => addComment(c.ctx)(
-              c arg CommenterIdArg,
-              c arg CommenteeIdArg,
-              c arg ReplyToIdArg,
-              c arg CommentArg))))
-  
+          arguments = CommentInputArg :: Nil,
+          resolve = c => {
+            val x = c arg CommentInputArg
+            addComment(c.ctx)(x.commenterId.toInt, x.commenteeId.toInt, x.replyToId.map(_.toInt), x.comment)
+          })))
+          
   val QueryType = ObjectType("Query", fields[Database, Unit](
       Field("characters",
           ListType(CharacterType),
