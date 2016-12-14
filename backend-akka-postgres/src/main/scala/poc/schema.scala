@@ -47,7 +47,7 @@ trait PocSchema { self: PocDatabase with PocQueries =>
       Field("planets", ListType(PlanetType), resolve = c => findPlanetsBySpecies(c.ctx)(c.value.id))))
       
   val AssociationType = ObjectType("Association", () => fields[Database, Association](
-      Field("character", CharacterType, resolve = _.value.character),
+      Field("character", CharacterType, resolve = c => findCharacter(c.ctx)(c.value.characterId)),
       Field("relation", StringType, resolve = _.value.relation)))
       
   val CharacterType: InterfaceType[Database, Character] = InterfaceType(
@@ -57,7 +57,7 @@ trait PocSchema { self: PocDatabase with PocQueries =>
           Field("id", IDType, resolve = _.value.id.toString),
           Field("kind", StringType, resolve = _.value.kind),
           Field("name", StringType, resolve = _.value.name),
-          Field("associates", ListType(AssociationType), resolve = c => findAssociates(c.ctx)(c.value.id)),
+          Field("associates", ListType(AssociationType), resolve = c => findAssociations(c.ctx)(c.value.assocIds)),
           Field("appearsIn", ListType(EpisodeType), resolve = c => findEpisodes(c.ctx)(c.value.id)),
           Field("favoriteWeapon", OptionType(WeaponType), resolve = _.value.favoriteWeapon)))
           
@@ -69,7 +69,7 @@ trait PocSchema { self: PocDatabase with PocQueries =>
           Field("id", IDType, resolve = _.value.id.toString),
           Field("kind", StringType, resolve = _.value.kind),
           Field("name", StringType, resolve = _.value.name),
-          Field("associates", ListType(AssociationType), resolve = c => findAssociates(c.ctx)(c.value.id)),
+          Field("associates", ListType(AssociationType), resolve = c => findAssociations(c.ctx)(c.value.assocIds)),
           Field("appearsIn", ListType(EpisodeType), resolve = c => findEpisodes(c.ctx)(c.value.id)),
           Field("favoriteWeapon", OptionType(WeaponType), resolve = _.value.favoriteWeapon),
           Field("species", SpeciesType, resolve = _.value.species),
@@ -83,7 +83,7 @@ trait PocSchema { self: PocDatabase with PocQueries =>
           Field("id", IDType, resolve = _.value.id.toString),
           Field("kind", StringType, resolve = _.value.kind),
           Field("name", StringType, resolve = _.value.name),
-          Field("associates", ListType(AssociationType), resolve = c => findAssociates(c.ctx)(c.value.id)),
+          Field("associates", ListType(AssociationType), resolve = c => findAssociations(c.ctx)(c.value.assocIds)),
           Field("appearsIn", ListType(EpisodeType), resolve = c => findEpisodes(c.ctx)(c.value.id)),
           Field("favoriteWeapon", OptionType(WeaponType), resolve = _.value.favoriteWeapon),
           Field("primaryFunction", DroidFunctionType, resolve = _.value.primaryFunction)))

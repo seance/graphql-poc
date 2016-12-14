@@ -40,6 +40,7 @@ CREATE TABLE characters_droids (
 );
 
 CREATE TABLE character_associations (
+  id        SERIAL PRIMARY KEY,
   target_id INTEGER NOT NULL REFERENCES characters (id),
   source_id INTEGER NOT NULL REFERENCES characters (id),
   relation  VARCHAR NOT NULL,

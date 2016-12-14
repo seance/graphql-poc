@@ -21,7 +21,7 @@ trait PocDatabase {
   lazy val CharacterComments = new TableQuery(new CharacterComments(_))
   
   case class CharEpisodeDto(characterId: Int, episode: Int)
-  case class CharAssociationDto(targetId: Int, sourceId: Int, relation: String)
+  case class CharAssociationDto(id: Int, targetId: Int, sourceId: Int, relation: String)
   case class CharacterDto(id: Int, kind: String, name: String, favoriteWeaponId: Option[Int])
   case class OrganicDto(id: Int, kind: String, speciesId: Int, homePlanetId: Int)
   case class DroidDto(id: Int, kind: String, primaryFunction: Int)
@@ -77,10 +77,11 @@ trait PocDatabase {
   }
   
   class CharacterAssociations(tag: Tag) extends Table[CharAssociationDto](tag, "character_associations") {
+    val id = column[Int]("id")
     val targetId = column[Int]("target_id")
     val sourceId = column[Int]("source_id")
     val relation = column[String]("relation")
-    def * = (targetId, sourceId, relation) <> (CharAssociationDto.tupled, CharAssociationDto.unapply)
+    def * = (id, targetId, sourceId, relation) <> (CharAssociationDto.tupled, CharAssociationDto.unapply)
     
     lazy val targetIdFk = foreignKey("fk_target_id", targetId, Characters)(
         r => r.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Restrict)
