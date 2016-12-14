@@ -50,15 +50,19 @@ trait PocQueries { self: PocDatabase =>
     }.toSeq.sortBy(_.id)
   }
   
-  def queryCharacters() = for {
+  def queryAllCharacters() = for {
     ((c, w), a) <- Characters
       .joinLeft(Weapons).on(_.favoriteWeaponId === _.id)
       .joinLeft(CharacterAssociations).on(_._1.id === _.targetId)
   }
   yield (c, w, a)
   
+  def queryCharacters(characterIds: Seq[Int]) = {
+    queryCharactersPolymorphic.filter(_._1.id inSet characterIds)
+  }
+  
   def queryCharactersPolymorphic() = for {
-    (c, w, a) <- queryCharacters
+    (c, w, a) <- queryAllCharacters
     (((co, o), s), p) <- Characters
       .joinLeft(Organics).on(_.id === _.id)
       .joinLeft(Species).on(_._2.map(_.speciesId) === _.id)
@@ -78,13 +82,18 @@ trait PocQueries { self: PocDatabase =>
   }
   yield a
   
+  def queryAssociationsByCharacter(characterIds: Seq[Int]) = for {
+    (c, w, a) <- queryAllCharacters if c.id inSet characterIds
+  }
+  yield a
+  
   def queryEpisodes(characterId: Int) = for {
     e <- CharacterEpisodes if e.characterId === characterId
   }
   yield e
   
   def queryOrganics() = for {
-    (c, w, a) <- queryCharacters
+    (c, w, a) <- queryAllCharacters
     o <- Organics if c.id === o.id
     s <- Species if o.speciesId === s.id
     p <- Planets if o.homePlanetId === p.id
@@ -98,7 +107,7 @@ trait PocQueries { self: PocDatabase =>
   yield (c, w, a, s, p)
   
   def queryDroids() = for {
-    (c, w, a) <- queryCharacters
+    (c, w, a) <- queryAllCharacters
     d <- Droids if c.id === d.id
   }
   yield (c, w, a, d)
@@ -116,7 +125,7 @@ trait PocQueries { self: PocDatabase =>
   yield s
   
   def queryNativesByPlanet(planetId: Int) = for {
-    (c, w, a) <- queryCharacters
+    (c, w, a) <- queryAllCharacters
     o <- Organics if c.id === o.id && o.homePlanetId === planetId
     s <- Species if s.id === o.speciesId
     p <- Planets if p.id === o.homePlanetId
@@ -146,7 +155,13 @@ trait PocQueries { self: PocDatabase =>
   
   def findAssociations(db: Database)(associationIds: Seq[Int]) = {
     db.run(queryAssociations(associationIds).result).map(_.map { a =>
-      Association(a.id, a.sourceId, a.relation)
+      Association(a.id, a.targetId, a.sourceId, a.relation)
+    })
+  }
+  
+  def findAssociationsByCharacter(db: Database)(characterIds: Seq[Int]) = {
+    db.run(queryAssociationsByCharacter(characterIds).result).map(_.collect { case Some(a) =>
+      Association(a.id, a.targetId, a.sourceId, a.relation)
     })
   }
   
@@ -162,11 +177,16 @@ trait PocQueries { self: PocDatabase =>
     db.run(ep.map(queryDroidsByEpisode).getOrElse(queryDroids).result).map(mapDroids)
   }
   
-  def findCharacters(db: Database)(ep: Option[Episode]): Future[Seq[Character]] =
+  def findAllCharacters(db: Database)(ep: Option[Episode]): Future[Seq[Character]] =
     Future.reduce(findOrganics(db)(ep) :: findDroids(db)(ep) :: Nil)(_ ++ _)
     
-  def findCharacter(db: Database)(characterId: Int) =
+  def findCharacters(db: Database)(characterIds: Seq[Int]) = {
+    db.run(queryCharacters(characterIds).result).map(mapCharacters)
+  }
+    
+  def findCharacter(db: Database)(characterId: Int) = {
     db.run(queryCharacterPolymorphic(characterId).result).map(mapCharacters(_).head)
+  }
   
   def findSpeciesByPlanet(db: Database)(planetId: Int) = {
     db.run(querySpeciesByPlanet(planetId).distinct.result)

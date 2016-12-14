@@ -20,7 +20,7 @@ import DroidFunction._
 case class Weapon(id: Int, name: String)
 case class Planet(id: Int, name: String, ecology: String)
 case class Species(id: Int, name: String)
-case class Association(id: Int, characterId: Int, relation: String)
+case class Association(id: Int, targetId: Int, sourceId: Int, relation: String)
 case class Comment(id: Int, commenterId: Int, commenteeId: Int, replyToId: Option[Int], comment: String)
 
 trait Character {

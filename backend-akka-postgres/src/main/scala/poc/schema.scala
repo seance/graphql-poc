@@ -4,6 +4,7 @@ import poc.models._
 import poc.queries._
 import poc.database._
 import sangria.schema._
+import sangria.execution.deferred._
 import sangria.marshalling.circe._
 import io.circe._
 import io.circe.generic.semiauto._
@@ -13,6 +14,17 @@ import scala.concurrent._
 trait PocSchema { self: PocDatabase with PocQueries =>
   
   import dbConfig.driver.api._
+  
+  val assocByTarget = Relation[Association, Int]("assocByTarget", a => Seq(a.targetId))
+  
+  val assocsFetcher = Fetcher.relCaching[Database, Association, Int](
+      (db, ids) => findAssociations(db)(ids),
+      (db, ids) => findAssociationsByCharacter(db)(ids(assocByTarget)))(HasId(_.id))
+      
+  val charsFetcher = Fetcher.caching[Database, Character, Int](
+      (db, ids) => findCharacters(db)(ids))(HasId(_.id))
+      
+  val resolver = DeferredResolver.fetchers(assocsFetcher, charsFetcher)
       
   val EpisodeType = EnumType(
       "Episode",
@@ -47,31 +59,27 @@ trait PocSchema { self: PocDatabase with PocQueries =>
       Field("planets", ListType(PlanetType), resolve = c => findPlanetsBySpecies(c.ctx)(c.value.id))))
       
   val AssociationType = ObjectType("Association", () => fields[Database, Association](
-      Field("character", CharacterType, resolve = c => findCharacter(c.ctx)(c.value.characterId)),
+      Field("character", CharacterType, resolve = c => charsFetcher.defer(c.value.sourceId)),
       Field("relation", StringType, resolve = _.value.relation)))
+      
+  def characterCommonFields[C <: Character] = fields[Database, C](
+      Field("id", IDType, resolve = _.value.id.toString),
+      Field("kind", StringType, resolve = _.value.kind),
+      Field("name", StringType, resolve = _.value.name),
+      Field("associates", ListType(AssociationType), resolve = c => assocsFetcher.deferSeqOpt(c.value.assocIds)),
+      Field("appearsIn", ListType(EpisodeType), resolve = c => findEpisodes(c.ctx)(c.value.id)),
+      Field("favoriteWeapon", OptionType(WeaponType), resolve = _.value.favoriteWeapon))
       
   val CharacterType: InterfaceType[Database, Character] = InterfaceType(
       "Character",
       "A character in the Star Wars universe",
-      () => fields[Database, Character](
-          Field("id", IDType, resolve = _.value.id.toString),
-          Field("kind", StringType, resolve = _.value.kind),
-          Field("name", StringType, resolve = _.value.name),
-          Field("associates", ListType(AssociationType), resolve = c => findAssociations(c.ctx)(c.value.assocIds)),
-          Field("appearsIn", ListType(EpisodeType), resolve = c => findEpisodes(c.ctx)(c.value.id)),
-          Field("favoriteWeapon", OptionType(WeaponType), resolve = _.value.favoriteWeapon)))
+      () => characterCommonFields[Character])
           
   val OrganicType: ObjectType[Database, Organic] = ObjectType(
       "Organic",
       "A non-mechanical character, e.g. human, wookiee...",
       interfaces[Database, Organic](CharacterType),
-      () => fields[Database, Organic](
-          Field("id", IDType, resolve = _.value.id.toString),
-          Field("kind", StringType, resolve = _.value.kind),
-          Field("name", StringType, resolve = _.value.name),
-          Field("associates", ListType(AssociationType), resolve = c => findAssociations(c.ctx)(c.value.assocIds)),
-          Field("appearsIn", ListType(EpisodeType), resolve = c => findEpisodes(c.ctx)(c.value.id)),
-          Field("favoriteWeapon", OptionType(WeaponType), resolve = _.value.favoriteWeapon),
+      () => characterCommonFields[Organic] ++ fields[Database, Organic](
           Field("species", SpeciesType, resolve = _.value.species),
           Field("homePlanet", PlanetType, resolve = _.value.homePlanet)))
       
@@ -79,13 +87,7 @@ trait PocSchema { self: PocDatabase with PocQueries =>
       "Droid",
       "A mechanical character",
       interfaces[Database, Droid](CharacterType),
-      fields[Database, Droid](
-          Field("id", IDType, resolve = _.value.id.toString),
-          Field("kind", StringType, resolve = _.value.kind),
-          Field("name", StringType, resolve = _.value.name),
-          Field("associates", ListType(AssociationType), resolve = c => findAssociations(c.ctx)(c.value.assocIds)),
-          Field("appearsIn", ListType(EpisodeType), resolve = c => findEpisodes(c.ctx)(c.value.id)),
-          Field("favoriteWeapon", OptionType(WeaponType), resolve = _.value.favoriteWeapon),
+      () => characterCommonFields[Droid] ++ fields[Database, Droid](
           Field("primaryFunction", DroidFunctionType, resolve = _.value.primaryFunction)))
           
   val CommentType = ObjectType(
@@ -111,6 +113,7 @@ trait PocSchema { self: PocDatabase with PocQueries =>
           
   implicit val commentInputDecoder = deriveDecoder[CommentInput]
   
+  val CharIdArg = Argument("characterId", IDType, "Character id")
   val EpisodeArg = Argument("episode", OptionInputType(EpisodeType), "Optionally limit query to an episode")
   val CommentInputArg = Argument("commentInput", CommentInputType, "Comment input")
 
@@ -131,7 +134,7 @@ trait PocSchema { self: PocDatabase with PocQueries =>
           ListType(CharacterType),
           Some("List characters from the Star Wars universe"),
           arguments = EpisodeArg :: Nil,
-          resolve = c => findCharacters(c.ctx)(c.arg(EpisodeArg))),
+          resolve = c => findAllCharacters(c.ctx)(c.arg(EpisodeArg))),
       Field("organics",
           ListType(OrganicType),
           Some("List non-mechanical characters"),
@@ -153,7 +156,13 @@ trait PocSchema { self: PocDatabase with PocQueries =>
       Field("comments",
           ListType(CommentType),
           Some("Comments between characters"),
-          resolve = c => findComments(c.ctx))))
+          resolve = c => findComments(c.ctx)),
+      Field("associatesByCharacter",
+          ListType(AssociationType),
+          Some("Associates of a character"),
+          arguments = CharIdArg :: Nil,
+          resolve = c => assocsFetcher.deferRelSeq(assocByTarget, (c arg CharIdArg).toInt))
+  ))
       
   val PocSchema = Schema(QueryType, Some(MutationType))
 }

@@ -47,7 +47,7 @@ object WebServer extends App with Directives with PocSchema with PocQueries with
   
   def executeGraphQL(query: String, opName: Option[String], vars: Json): Future[(StatusCode, Json)] = {
     QueryParser.parse(query).map { queryDoc =>
-      Executor.execute(PocSchema, queryDoc, dbConfig.db, (), opName, vars).map(OK -> _) recover {
+      Executor.execute(PocSchema, queryDoc, dbConfig.db, (), opName, vars, deferredResolver = resolver).map(OK -> _) recover {
         case e: QueryAnalysisError => UnprocessableEntity -> e.resolveError
         case e: ErrorWithResolver => InternalServerError -> e.resolveError
       }
