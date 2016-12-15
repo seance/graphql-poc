@@ -24,9 +24,10 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-optics" % "0.6.0",
   "com.typesafe.slick" %% "slick" % "3.1.1",
   "com.typesafe.slick" %% "slick-hikaricp" % "3.1.1",
-  "org.slf4j" % "slf4j-nop" % "1.6.4",
   "org.postgresql" % "postgresql" % "9.4.1211",
-  "commons-lang" % "commons-lang" % "2.6")
+  "commons-lang" % "commons-lang" % "2.6",
+  "ch.qos.logback" % "logback-classic" % "1.1.8",
+  "org.slf4j" % "slf4j-api" % "1.7.22")
   
 def oneJarMappings(path: String) = (file(path) ** "*.*").get.map { f =>
   f -> f.getPath.replaceFirst(s"$path/", "")

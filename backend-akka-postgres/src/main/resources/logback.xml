@@ -1,0 +1,55 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>*** \(%logger{30}\)%green(%X{debugId}) %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="${log.root:-info}">
+        <appender-ref ref="STDOUT" />
+    </root>
+    <logger name="slick.basic.BasicBackend.action"          level="${log.stream:-debug}" />
+    <logger name="slick.basic.BasicBackend.stream"          level="${log.stream:-info}" />
+    <logger name="slick.compiler"                           level="${log.qcomp:-info}" />
+    <logger name="slick.compiler.QueryCompiler"             level="${log.qcomp.phases:-info}" />
+    <logger name="slick.compiler.QueryCompilerBenchmark"    level="${log.qcomp.bench:-info}" />
+    <logger name="slick.compiler.Inline"                    level="${log.qcomp.inline:-info}" />
+    <logger name="slick.compiler.AssignUniqueSymbols"       level="${log.qcomp.assignUniqueSymbols:-info}" />
+    <logger name="slick.compiler.InferTypes"                level="${log.qcomp.inferTypes:-info}" />
+    <logger name="slick.compiler.ExpandTables"              level="${log.qcomp.expandTables:-info}" />
+    <logger name="slick.compiler.EmulateOuterJoins"         level="${log.qcomp.emulateOuterJoins:-info}" />
+    <logger name="slick.compiler.ForceOuterBinds"           level="${log.qcomp.forceOuterBinds:-info}" />
+    <logger name="slick.compiler.RemoveMappedTypes"         level="${log.qcomp.removeMappedTypes:-info}" />
+    <logger name="slick.compiler.CreateResultSetMapping"    level="${log.qcomp.createResultSetMapping:-info}" />
+    <logger name="slick.compiler.ExpandSums"                level="${log.qcomp.expandSums:-info}" />
+    <logger name="slick.compiler.ExpandRecords"             level="${log.qcomp.expandRecords:-info}" />
+    <logger name="slick.compiler.ExpandConditionals"        level="${log.qcomp.expandConditionals:-info}" />
+    <logger name="slick.compiler.FlattenProjections"        level="${log.qcomp.flattenProjections:-info}" />
+    <logger name="slick.compiler.CreateAggregates"          level="${log.qcomp.createAggregates:-info}" />
+    <logger name="slick.compiler.RewriteJoins"              level="${log.qcomp.rewriteJoins:-info}" />
+    <logger name="slick.compiler.RemoveTakeDrop"            level="${log.qcomp.removeTakeDrop:-info}" />
+    <logger name="slick.compiler.ResolveZipJoins"           level="${log.qcomp.resolveZipJoins:-info}" />
+    <logger name="slick.compiler.HoistClientOps"            level="${log.qcomp.hoistClientOps:-info}" />
+    <logger name="slick.compiler.ReorderOperations"         level="${log.qcomp.reorderOperations:-info}" />
+    <logger name="slick.compiler.MergeToComprehensions"     level="${log.qcomp.mergeToComprehensions:-info}" />
+    <logger name="slick.compiler.OptimizeScalar"            level="${log.qcomp.optimizeScalar:-info}" />
+    <logger name="slick.compiler.FixRowNumberOrdering"      level="${log.qcomp.fixRowNumberOrdering:-info}" />
+    <logger name="slick.compiler.PruneProjections"          level="${log.qcomp.pruneProjections:-info}" />
+    <logger name="slick.compiler.RewriteDistinct"           level="${log.qcomp.rewriteDistinct:-info}" />
+    <logger name="slick.compiler.RewriteBooleans"           level="${log.qcomp.rewriteBooleans:-info}" />
+    <logger name="slick.compiler.SpecializeParameters"      level="${log.qcomp.specializeParameters:-info}" />
+    <logger name="slick.compiler.CodeGen"                   level="${log.qcomp.codeGen:-info}" />
+    <logger name="slick.compiler.RemoveFieldNames"          level="${log.qcomp.removeFieldNames:-info}" />
+    <logger name="slick.compiler.InsertCompiler"            level="${log.qcomp.insertCompiler:-info}" />
+    <logger name="slick.compiler.VerifyTypes"               level="${log.qcomp.verifyTypes:-info}" />
+    <logger name="slick.jdbc.DriverDataSource"              level="${log.jdbc.driver:-info}" />
+    <logger name="slick.jdbc.JdbcBackend.statement"         level="${log.jdbc.statement:-info}" />
+    <logger name="slick.jdbc.JdbcBackend.parameter"         level="${log.jdbc.parameter:-info}" />
+    <logger name="slick.jdbc.JdbcBackend.benchmark"         level="${log.jdbc.bench:-info}" />
+    <logger name="slick.jdbc.StatementInvoker.result"       level="${log.jdbc.result:-info}" />
+    <logger name="slick.jdbc.JdbcModelBuilder"              level="${log.createModel:-info}" />
+    <logger name="slick.memory.HeapBackend"                 level="${log.heap:-info}" />
+    <logger name="slick.memory.QueryInterpreter"            level="${log.interpreter:-info}" />
+    <logger name="slick.relational.ResultConverterCompiler" level="${log.resultConverter:-info}" />
+    <logger name="slick.util.AsyncExecutor"                 level="${log.asyncExecutor:-info}" />
+    <logger name="com.zaxxer.hikari"                        level="warn" />
+</configuration>
