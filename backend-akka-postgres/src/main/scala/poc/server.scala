@@ -100,9 +100,11 @@ object WebServer extends App with Directives with PocSchema with PocQueries with
     case Failure(t) => println(s"Server startup failed: $t")
   }
   
-//  StdIn.readLine()
-//  
-//  bindingFuture.flatMap(_.unbind()).onComplete { _ =>
-//    dbConfig.db.shutdown.flatMap(_ => system.terminate())
-//  }
+  if (sys.env.get("DEVELOPMENT").isDefined) {
+    StdIn.readLine()
+    
+    bindingFuture.flatMap(_.unbind()).onComplete { _ =>
+      dbConfig.db.shutdown.flatMap(_ => system.terminate())
+    }
+  }
 }
