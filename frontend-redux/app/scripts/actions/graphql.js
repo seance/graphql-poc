@@ -1,18 +1,14 @@
 import * as GraphQL from '../graphql'
 
-export const GRAPHQL_REQUEST = 'GRAPHQL_REQUEST'
-export const GRAPHQL_SUCCESS = 'GRAPHQL_SUCCESS'
-export const GRAPHQL_FAILURE = 'GRAPHQL_FAILURE'
-
-export const fetchGraphQL = (query, variables) => (dispatch, getState) => {
-  dispatch({ type: GRAPHQL_REQUEST })
+export const fetchGraphQL = (actions, query, variables) => (dispatch, getState) => {
+  dispatch({ type: actions.Request })
   return GraphQL.fetchGraphQL(query, variables)
     .then(json => dispatch({
-      type: GRAPHQL_SUCCESS,
+      type: actions.Success,
       payload: json.data
     }))
     .catch(err => dispatch({
-      type: GRAPHQL_FAILURE,
+      type: actions.Failure,
       payload: err
     }))
 }

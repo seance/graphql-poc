@@ -48,3 +48,4 @@ jspm_packages
 
 # App specific
 app/bundle.js
+app/scripts/queries.js

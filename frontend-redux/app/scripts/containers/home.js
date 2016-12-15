@@ -1,8 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 
-import { fetchGraphQL } from '../actions/graphql'
-import * as Queries from '../queries'
+import { fetchCharacters } from '../actions/home'
 import CharacterList from '../components/characterList'
 
 class Home extends Component {
@@ -14,8 +13,8 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    const { fetchGraphQL, withAssociates } = this.props
-    fetchGraphQL(Queries.characters, { withAssociates })
+    const { fetchCharacters, withAssociates } = this.props
+    fetchCharacters({ withAssociates })
   }
 
   render() {
@@ -39,8 +38,8 @@ class Home extends Component {
 
 export default connect(state => ({
   // mapStateToProps
-  ...state.home
+  ...state.home.toJS()
 }), {
   // mapDispatchToProps
-  fetchGraphQL
+  fetchCharacters
 })(Home)

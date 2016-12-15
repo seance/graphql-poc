@@ -1,0 +1,13 @@
+query FetchCharacters($withAssociates: Boolean!) {
+  characters {
+    id
+    name
+    associates @include(if: $withAssociates) {
+      relation
+      character {
+        id
+        name
+      }
+    }
+  }
+}
