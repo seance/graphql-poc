@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component, PropTypes as P } from 'react'
 import { connect } from 'react-redux'
 
 import { fetchCharacters } from '../actions/home'
@@ -7,9 +7,9 @@ import CharacterList from '../components/characterList'
 class Home extends Component {
 
   static propTypes = {
-    isFetching: PropTypes.bool.isRequired,
-    characters: PropTypes.arrayOf(PropTypes.object).isRequired,
-    withAssociates: PropTypes.bool.isRequired
+    isFetching    : P.bool.isRequired,
+    characters    : P.arrayOf(P.object).isRequired,
+    withAssociates: P.bool.isRequired
   }
 
   componentDidMount() {
@@ -24,7 +24,7 @@ class Home extends Component {
         This is Home
         {
           isFetching ? (
-            <span>Loading...</span>
+            <div>Loading...</div>
           ) : (
             <CharacterList
               characters={characters}

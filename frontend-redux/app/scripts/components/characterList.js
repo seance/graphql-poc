@@ -1,11 +1,11 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component, PropTypes as P } from 'react'
 import R from 'ramda'
 
 export default class CharacterList extends Component {
 
   static propTypes = {
-    characters: PropTypes.arrayOf(PropTypes.object).isRequired,
-    withAssociates: PropTypes.bool.isRequired
+    characters    : P.arrayOf(P.object).isRequired,
+    withAssociates: P.bool.isRequired
   }
 
   render() {

@@ -2,8 +2,8 @@ import Immutable, { Map, List } from 'immutable'
 import { FetchCharacters } from '../actions/home'
 
 const initialState = Map({
-  isFetching: false,
-  characters: List(),
+  isFetching    : false,
+  characters    : List(),
   withAssociates: true
 })
 

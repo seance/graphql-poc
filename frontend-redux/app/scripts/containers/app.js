@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component, PropTypes as P } from 'react'
 import { connect } from 'react-redux'
 
 class App extends Component {
