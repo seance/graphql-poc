@@ -17,7 +17,10 @@ export const fetchGraphQL = (query, variables) => {
     })
   }).then(response => {
     if (response.status >= 400) {
-      throw new Error(`[${response.status}] ${response.statusText}`)
+      return response.json().then(err => {
+        console.error(err.errors)
+        throw new Error(err.errors)
+      })
     }
     return response.json()
   });
