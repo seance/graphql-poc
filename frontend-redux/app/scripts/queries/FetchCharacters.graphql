@@ -1,13 +1,25 @@
-query FetchCharacters($withAssociates: Boolean!) {
-  characters {
+query FetchCharacters($episode: Episode) {
+  characters(episode: $episode) {
     id
+    kind
     name
-    associates @include(if: $withAssociates) {
-      relation
-      character {
-        id
-        name
-      }
+    favoriteWeapon {
+      name
     }
+    ...organicFields
+    ...droidFields
   }
+}
+
+fragment organicFields on Organic {
+  species {
+    name
+  }
+  homePlanet {
+    name
+  }
+}
+
+fragment droidFields on Droid {
+  primaryFunction
 }

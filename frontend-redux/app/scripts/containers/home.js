@@ -7,32 +7,35 @@ import CharacterList from '../components/characterList'
 class Home extends Component {
 
   static propTypes = {
-    isFetching    : P.bool.isRequired,
-    characters    : P.arrayOf(P.object).isRequired,
-    withAssociates: P.bool.isRequired
+    isFetching: P.bool.isRequired,
+    characters: P.arrayOf(P.object).isRequired
   }
 
   componentDidMount() {
-    const { fetchCharacters, withAssociates } = this.props
-    fetchCharacters({ withAssociates })
+    const { fetchCharacters } = this.props
+    fetchCharacters()
   }
 
   render() {
-    const { isFetching, characters, withAssociates } = this.props
+    const { isFetching, characters } = this.props
+    const content = isFetching
+      ? this.renderFetching()
+      : this.renderCharacterList(characters)
+
     return (
       <div>
         This is Home
-        {
-          isFetching ? (
-            <div>Loading...</div>
-          ) : (
-            <CharacterList
-              characters={characters}
-              withAssociates={withAssociates}/>
-          )
-        }
+        {content}
       </div>
     )
+  }
+
+  renderFetching() {
+    return <div>Loading...</div>
+  }
+
+  renderCharacterList(characters) {
+    return <CharacterList characters={characters}/>
   }
 }
 

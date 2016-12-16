@@ -1,36 +1,22 @@
 import React, { Component, PropTypes as P } from 'react'
 import R from 'ramda'
 
+import Character from './character'
+
 export default class CharacterList extends Component {
 
   static propTypes = {
-    characters    : P.arrayOf(P.object).isRequired,
-    withAssociates: P.bool.isRequired
+    characters: P.arrayOf(P.object).isRequired
   }
 
   render() {
-    const { characters, withAssociates } = this.props
-    const associates = withAssociates ? (c =>
-      <ul>
-        {c.associates.map(a => (
-          <li key={`${c.id}-${a.character.id}`}>
-            {a.character.name} ({a.relation})
-          </li>
-        ))}
-      </ul>
-    ) : R.always(null);
-
+    const { characters } = this.props
     return (
       <div>
         Characters
-        <ul>
-          {characters.map(c => (
-            <li key={`character-${c.id}`}>
-              {c.name}
-              {associates(c)}
-            </li>
-          ))}
-        </ul>
+        {characters.map(c => (
+          <Character key={c.id} character={c}/>
+        ))}
       </div>
     )
   }
