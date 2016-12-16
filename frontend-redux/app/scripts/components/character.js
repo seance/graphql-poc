@@ -17,12 +17,23 @@ export default class Character extends Component {
   renderOrganic(c) {
     return (
       <div className="character character-organic">
-        <div className="species">{c.species.name}</div>
-        <div className="name">{c.name}</div>
-        <div className="favorite-weapon">
-          {R.pathOr('No favorite weapon', ['favoriteWeapon', 'name'], c)}
+        <div className="species-panel">
+          <div className="species-icon"></div>
+          <div className="species-name">{c.species.name}</div>
         </div>
-        <div className="planet">{c.homePlanet.name}</div>
+        <div className="info-panel">
+          <div className="name">{c.name}</div>
+          <div className="weapon-panel">
+            <div className="weapon-icon">Favorite weapon</div>
+            <div className="favorite-weapon">
+              {R.pathOr('No favorite weapon', ['favoriteWeapon', 'name'], c)}
+            </div>
+          </div>
+          <div className="planet-panel">
+            <div className="planet-icon">Home planet</div>
+            <div className="planet-name">{c.homePlanet.name}</div>
+          </div>
+        </div>
       </div>
     )
   }
@@ -30,24 +41,24 @@ export default class Character extends Component {
   renderDroid(c) {
     return (
       <div className="character character-droid">
-        <div className="droid">Droid</div>
-        <div className="name">{c.name}</div>
-        <div className="favorite-weapon">
-          {R.pathOr('No favorite weapon', ['favoriteWeapon', 'name'], c)}
+        <div className="droid-panel">
+          <div className="droid-icon"></div>
+          <div className="droid-label">Droid</div>
         </div>
-        <div className="primary-function">{c.primaryFunction}</div>
+        <div className="info-panel">
+          <div className="name">{c.name}</div>
+          <div className="weapon-panel">
+            <div className="weapon-icon">Favorite weapon</div>
+            <div className="favorite-weapon">
+              {R.pathOr('No favorite weapon', ['favoriteWeapon', 'name'], c)}
+            </div>
+          </div>
+          <div className="function-panel">
+            <div className="function-icon">Primary function</div>
+            <div className="function-name">{c.primaryFunction}</div>
+          </div>
+        </div>
       </div>
     )
   }
-
-  /*
-  CHARACTER:
-  <kind-icon>    <FULL NAME>
-  <kind/species> Label: <weapon-icon> <weapon-name>
-                 Label: <planet-name/primaryFunction>
-
-  PLANET:
-  <planet-icon> <NAME>
-                Label: <ecology>
-  */
 }

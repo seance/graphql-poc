@@ -7,8 +7,10 @@
     "clean": "n-clean app/bundle.js",
     "gen-queries": "node querygen.js",
     "build-js": "npm run clean && browserify app/scripts/index.js -o app/bundle.js",
+    "build-scss": "node-sass --output-style compressed --sourceMap true ./app/styles/styles.scss ./app/bundle.css",
     "watch-js": "n-run -w 'app/scripts/**/*.js' 'npm run build-js'",
-    "watch": "n-run 'npm run watch-js'",
+    "watch-scss": "n-run -w \"./app/styles/**/*.scss\" \"npm run build-scss\"",
+    "watch": "n-run 'npm run watch-js' 'npm run watch-scss'",
     "serve": "npm run gen-queries && n-run 'npm run watch' 'nodemon server.js'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,6 +24,7 @@
     "browserify": "^13.1.1",
     "express": "^4.14.0",
     "http-proxy": "^1.16.2",
+    "node-sass": "^4.0.0",
     "nodemon": "^1.11.0",
     "npm-build-tools": "^2.2.5",
     "stripmargin": "^1.0.7"

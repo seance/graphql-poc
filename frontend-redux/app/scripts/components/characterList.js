@@ -12,11 +12,13 @@ export default class CharacterList extends Component {
   render() {
     const { characters } = this.props
     return (
-      <div>
-        Characters
-        {characters.map(c => (
-          <Character key={c.id} character={c}/>
-        ))}
+      <div className="character-list">
+        <h2>The Characters</h2>
+        <div className="character-list-items">
+          {characters.map(c => (
+            <Character key={c.id} character={c}/>
+          ))}
+        </div>
       </div>
     )
   }

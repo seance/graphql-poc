@@ -1,0 +1,230 @@
+* {
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  background-color: lightgray;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+
+  h1 {
+    text-align: center;
+  }
+
+  nav {
+    display: flex;
+    justify-content: center;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: row;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      padding: 0.2rem 1rem;
+      cursor: pointer;
+      text-transform: uppercase;
+
+      &.is-active {
+        color: whitesmoke;
+        background-color: black;
+      }
+    }
+  }
+}
+
+.progress {
+  width: 100px;
+  height: 100px;
+  background: url('/images/progress.svg') no-repeat;
+  background-size: contain;
+  background-position: center;
+  margin: 100px;
+}
+
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .character-list {
+    width: 768px;
+  }
+}
+
+.planets {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .planet-list {
+    width: 768px;
+  }
+}
+
+.character {
+  display: flex;
+  flex-direction: row;
+  background-color: rgba(255, 255, 255, 0.4);
+  padding: 2rem;
+  margin: 1rem 0;
+
+  .info-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 5;
+
+    .name {
+      font-size: 2.5rem;
+      padding-bottom: 1rem;
+    }
+
+    .weapon-panel {
+      display: flex;
+      flex-direction: row;
+      line-height: 30px;
+
+      .weapon-icon {
+        height: 30px;
+        color: dimgray;
+        background: url('/images/weapon.png') no-repeat;
+        background-size: contain;
+        background-position: left middle;
+        padding-left: 40px;
+        padding-right: 10px;
+      }
+    }
+  }
+
+  &.character-organic {
+
+    .species-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 2;
+
+      .species-icon {
+        width: 100px;
+        height: 100px;
+        background: url('/images/organic.png') no-repeat;
+        background-size: contain;
+      }
+
+      .species-name {
+        font-size: 1.5rem;
+      }
+    }
+
+    .planet-panel {
+      display: flex;
+      flex-direction: row;
+      line-height: 30px;
+
+      .planet-icon {
+        height: 30px;
+        color: dimgray;
+        background: url('/images/planet.png') no-repeat;
+        background-size: contain;
+        background-position: left middle;
+        padding-left: 40px;
+        padding-right: 10px;
+      }
+    }
+  }
+
+  &.character-droid {
+
+    .droid-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 2;
+
+      .droid-icon {
+        width: 100px;
+        height: 100px;
+        background: url('/images/droid.png') no-repeat;
+        background-size: contain;
+      }
+
+      .droid-label {
+        font-size: 1.5rem;
+      }
+    }
+
+    .function-panel {
+      display: flex;
+      flex-direction: row;
+      line-height: 30px;
+
+      .function-icon {
+        height: 30px;
+        color: dimgray;
+        background: url('/images/function.png') no-repeat;
+        background-size: contain;
+        background-position: left middle;
+        padding-left: 40px;
+        padding-right: 10px;
+      }
+    }
+  }
+}
+
+.planet {
+  display: flex;
+  flex-direction: row;
+  background-color: rgba(255, 255, 255, 0.4);
+  padding: 2rem;
+  margin: 1rem 0;
+
+  .icon-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 2;
+
+    .planet-icon {
+      width: 100px;
+      height: 100px;
+      background: url('/images/planet.png') no-repeat;
+      background-size: contain;
+    }
+  }
+
+  .info-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 5;
+
+    .name {
+      font-size: 2.5rem;
+      padding-bottom: 1rem;
+    }
+
+    .ecology-panel {
+      display: flex;
+      flex-direction: row;
+      line-height: 30px;
+
+      .ecology-icon {
+        height: 30px;
+        color: dimgray;
+        background: url('/images/ecology.png') no-repeat;
+        background-size: contain;
+        background-position: left middle;
+        padding-left: 40px;
+        padding-right: 10px;
+      }
+    }
+  }
+}

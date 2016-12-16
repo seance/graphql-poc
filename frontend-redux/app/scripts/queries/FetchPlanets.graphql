@@ -1,0 +1,7 @@
+query FetchPlanets {
+  planets {
+    id
+    name
+    ecology
+  }
+}

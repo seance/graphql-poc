@@ -23,15 +23,14 @@ class Home extends Component {
       : this.renderCharacterList(characters)
 
     return (
-      <div>
-        This is Home
+      <div className="home">
         {content}
       </div>
     )
   }
 
   renderFetching() {
-    return <div>Loading...</div>
+    return <div className="progress"></div>
   }
 
   renderCharacterList(characters) {
