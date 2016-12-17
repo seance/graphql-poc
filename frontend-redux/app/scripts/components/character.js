@@ -45,6 +45,10 @@ export default class Character extends Component {
             <div className="planet-name">{c.homePlanet.name}</div>
           </div>
         </div>
+        <div className="faction-panel">
+          <div className={this.factionIconClass(c)}></div>
+          <div className="faction-name">{this.factionName(c)}</div>
+        </div>
       </div>
     )
   }
@@ -75,14 +79,33 @@ export default class Character extends Component {
             <div className="function-name">{c.primaryFunction}</div>
           </div>
         </div>
+        <div className="faction-panel">
+          <div className={this.factionIconClass(c)}></div>
+          <div className="faction-name">{this.factionName(c)}</div>
+        </div>
       </div>
     )
   }
 
-  clickCharacter(c) {
-    return e => {
-      e.preventDefault()
-      this.props.clickCharacter(c)
+  factionIconClass(c) {
+    switch (c.faction) {
+      case 'RebelAlliance':
+        return 'faction-icon-rebel'
+      case 'GalacticEmpire':
+        return 'faction-icon-empire'
+      default:
+        return 'faction-icon-unknown'
+    }
+  }
+
+  factionName(c) {
+    switch (c.faction) {
+      case 'RebelAlliance':
+        return 'Rebel Alliance'
+      case 'GalacticEmpire':
+        return 'Galactic Empire'
+      default:
+        return 'Unknown'
     }
   }
 }

@@ -20,6 +20,7 @@ CREATE TABLE characters (
   id                  INTEGER PRIMARY KEY,
   kind                VARCHAR NOT NULL CHECK (kind in ('organic', 'droid')),
   name                VARCHAR NOT NULL UNIQUE,
+  faction             INTEGER CHECK (faction in (1, 2)),
   favorite_weapon_id  INTEGER REFERENCES weapons (id),
   UNIQUE (id, kind)
 );
@@ -87,20 +88,20 @@ INSERT INTO planets (id, name, ecology) VALUES
   (8, 'Naboo', 'Temperate'),
   (9, 'Kamino', 'Aquatic');
 
-INSERT INTO characters (id, kind, name, favorite_weapon_id) VALUES
-  (1, 'organic', 'Luke Skywalker', 1),
-  (2, 'organic', 'Leia Organa', null),
-  (3, 'organic', 'Han Solo', 2),
-  (4, 'organic', 'Chewbacca', 3),
-  (5, 'organic', 'Lando Calrissian', null),
-  (6, 'organic', 'Gial Ackbar', null),
-  (7, 'organic', 'Nien Nunb', null),
-  (8, 'organic', 'Palpatine', null),
-  (9, 'organic', 'Darth Vader', 1),
-  (10, 'organic', 'Boba Fett', 4),
-  (11, 'droid', 'R2-D2', null),
-  (12, 'droid', 'C-3PO', null),
-  (13, 'droid', 'IG-88', 4);
+INSERT INTO characters (id, kind, name, faction, favorite_weapon_id) VALUES
+  (1, 'organic', 'Luke Skywalker', 1, 1),
+  (2, 'organic', 'Leia Organa', 1, null),
+  (3, 'organic', 'Han Solo', 1, 2),
+  (4, 'organic', 'Chewbacca', 1, 3),
+  (5, 'organic', 'Lando Calrissian', 1, null),
+  (6, 'organic', 'Gial Ackbar', 1, null),
+  (7, 'organic', 'Nien Nunb', 1, null),
+  (8, 'organic', 'Palpatine', 2, null),
+  (9, 'organic', 'Darth Vader', 2, 1),
+  (10, 'organic', 'Boba Fett', null, 4),
+  (11, 'droid', 'R2-D2', 1, null),
+  (12, 'droid', 'C-3PO', 1, null),
+  (13, 'droid', 'IG-88', null, 4);
 
 INSERT INTO characters_organics (id, species_id, home_planet_id) VALUES
   (1, 1, 1), -- Luke

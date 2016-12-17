@@ -3,6 +3,7 @@ query FetchCharacterAndAssocs($characterId: ID!) {
     id
     kind
     name
+    faction
     favoriteWeapon {
       name
     }
@@ -14,6 +15,7 @@ query FetchCharacterAndAssocs($characterId: ID!) {
         id
         kind
         name
+        faction
       }
     }
   }

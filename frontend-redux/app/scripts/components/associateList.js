@@ -24,7 +24,10 @@ export default class AssociateList extends Component {
             <div className={(a.character.kind === 'organic')
                 ? 'associate-organic'
                 : 'associate-droid'}>
-              {a.character.name}
+              <span>{a.character.name} </span>
+              <span className="associate-faction">
+                of {this.factionName(a)}
+              </span>
             </div>
             <div className="associate-relation">
               ({a.relation})
@@ -33,5 +36,16 @@ export default class AssociateList extends Component {
         ))}
       </div>
     )
+  }
+
+  factionName(a) {
+    switch (a.character.faction) {
+      case 'RebelAlliance':
+        return 'the Rebel Alliance'
+      case 'GalacticEmpire':
+        return 'the Galactic Empire'
+      default:
+        return 'unknown faction'
+    }
   }
 }

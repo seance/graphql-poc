@@ -7,6 +7,12 @@ object Episode extends Enumeration {
   val ReturnOfTheJedi = Value(3)
 }
 
+object Faction extends Enumeration {
+  type Faction = Value
+  val RebelAlliance = Value(1)
+  val GalacticEmpire = Value(2)
+}
+
 object DroidFunction extends Enumeration {
   type DroidFunction = Value
   val Astromech = Value(1)
@@ -15,6 +21,7 @@ object DroidFunction extends Enumeration {
 }
 
 import Episode._
+import Faction._
 import DroidFunction._
 
 case class Weapon(id: Int, name: String)
@@ -27,6 +34,7 @@ trait Character {
   val id: Int
   val kind: String
   val name: String
+  val faction: Option[Faction]
   val favoriteWeapon: Option[Weapon]
   val assocIds: Seq[Int]
 }
@@ -34,6 +42,7 @@ trait Character {
 case class Organic(
     id: Int,
     name: String,
+    faction: Option[Faction],
     favoriteWeapon: Option[Weapon],
     assocIds: Seq[Int],
     species: Species,
@@ -44,6 +53,7 @@ case class Organic(
 case class Droid(
     id: Int,
     name: String,
+    faction: Option[Faction],
     favoriteWeapon: Option[Weapon],
     assocIds: Seq[Int],
     primaryFunction: DroidFunction) extends Character {

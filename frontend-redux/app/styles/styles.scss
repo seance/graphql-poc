@@ -1,12 +1,13 @@
 * {
   box-sizing: border-box;
-  font-family: sans-serif;
+  font-family: 'Open Sans', sans-serif;
 }
 
 body {
   padding: 0;
   margin: 0;
   background-color: lightgray;
+  padding-bottom: 30px;
 }
 
 .header {
@@ -91,7 +92,7 @@ body {
   .info-panel {
     display: flex;
     flex-direction: column;
-    flex: 5;
+    flex: 4;
 
     .name {
       font-size: 2.5rem;
@@ -107,12 +108,46 @@ body {
       .weapon-icon {
         height: 30px;
         color: dimgray;
+        text-transform: uppercase;
+        font-size: .8rem;
         background: url('/images/weapon.png') no-repeat;
         background-size: contain;
         background-position: left middle;
         padding-left: 40px;
         padding-right: 10px;
       }
+    }
+  }
+
+  .faction-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 2;
+
+    .faction-icon-rebel {
+      width: 100px;
+      height: 100px;
+      background: url('/images/rebel.png') no-repeat;
+      background-size: contain;
+    }
+
+    .faction-icon-empire {
+      width: 100px;
+      height: 100px;
+      background: url('/images/empire.png') no-repeat;
+      background-size: contain;
+    }
+
+    .faction-icon-unknown {
+      width: 100px;
+      height: 100px;
+      background: url('/images/unknown.png') no-repeat;
+      background-size: contain;
+    }
+
+    .faction-name {
+      font-size: 1.5rem;
     }
   }
 
@@ -146,6 +181,8 @@ body {
       .planet-icon {
         height: 30px;
         color: dimgray;
+        text-transform: uppercase;
+        font-size: .8rem;
         background: url('/images/planet.png') no-repeat;
         background-size: contain;
         background-position: left middle;
@@ -183,6 +220,8 @@ body {
       .function-icon {
         height: 30px;
         color: dimgray;
+        text-transform: uppercase;
+        font-size: 0.8rem;
         background: url('/images/function.png') no-repeat;
         background-size: contain;
         background-position: left middle;
@@ -232,6 +271,8 @@ body {
       .ecology-icon {
         height: 30px;
         color: dimgray;
+        text-transform: uppercase;
+        font-size: .8rem;
         background: url('/images/ecology.png') no-repeat;
         background-size: contain;
         background-position: left middle;
@@ -269,8 +310,11 @@ body {
     padding-right: 10px;
   }
 
+  .associate-faction {
+    color: dimgray;
+  }
+
   .associate-relation {
     line-height: 30px;
-    color: dimgray;
   }
 }

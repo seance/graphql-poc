@@ -22,7 +22,7 @@ trait PocDatabase {
   
   case class CharEpisodeDto(characterId: Int, episode: Int)
   case class CharAssociationDto(id: Int, targetId: Int, sourceId: Int, relation: String)
-  case class CharacterDto(id: Int, kind: String, name: String, favoriteWeaponId: Option[Int])
+  case class CharacterDto(id: Int, kind: String, name: String, faction: Option[Int], favoriteWeaponId: Option[Int])
   case class OrganicDto(id: Int, kind: String, speciesId: Int, homePlanetId: Int)
   case class DroidDto(id: Int, kind: String, primaryFunction: Int)
   
@@ -49,8 +49,9 @@ trait PocDatabase {
     val id = column[Int]("id", O.PrimaryKey)
     val kind = column[String]("kind")
     val name = column[String]("name")
+    val faction = column[Option[Int]]("faction")
     val favoriteWeaponId = column[Option[Int]]("favorite_weapon_id")
-    def * = (id, kind, name, favoriteWeaponId) <> (CharacterDto.tupled, CharacterDto.unapply)
+    def * = (id, kind, name, faction, favoriteWeaponId) <> (CharacterDto.tupled, CharacterDto.unapply)
     
     lazy val favoriteWeaponIdFk = foreignKey("fk_favorite_weapon_id", favoriteWeaponId, Weapons)(
         r => r.id.?, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Restrict)

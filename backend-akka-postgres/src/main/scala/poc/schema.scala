@@ -34,6 +34,13 @@ trait PocSchema { self: PocDatabase with PocQueries =>
           EnumValue("TheEmpireStrikesBack", value = Episode.TheEmpireStrikesBack),
           EnumValue("ReturnOfTheJedi", value = Episode.ReturnOfTheJedi)))
   
+  val FactionType = EnumType(
+      "Faction",
+      Some("The Rebel Alliance or the Galactic Empire"),
+      List(
+          EnumValue("RebelAlliance", value = Faction.RebelAlliance),
+          EnumValue("GalacticEmpire", value = Faction.GalacticEmpire)))
+          
   val DroidFunctionType = EnumType(
       "DroidFunction",
       Some("Primary function of a droid"),
@@ -66,6 +73,7 @@ trait PocSchema { self: PocDatabase with PocQueries =>
       Field("id", IDType, resolve = _.value.id.toString),
       Field("kind", StringType, resolve = _.value.kind),
       Field("name", StringType, resolve = _.value.name),
+      Field("faction", OptionType(FactionType), resolve = _.value.faction),
       Field("associates", ListType(AssociationType), resolve = c => assocsFetcher.deferSeqOpt(c.value.assocIds)),
       Field("appearsIn", ListType(EpisodeType), resolve = c => findEpisodes(c.ctx)(c.value.id)),
       Field("favoriteWeapon", OptionType(WeaponType), resolve = _.value.favoriteWeapon))

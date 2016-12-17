@@ -10,6 +10,7 @@ trait PocQueries { self: PocDatabase =>
   
   import dbConfig.driver.api._
   import Episode._
+  import Faction._
   
   def mapOrganics(os: Seq[(
       CharacterDto,
@@ -19,7 +20,7 @@ trait PocQueries { self: PocDatabase =>
       Planet)]): Seq[Organic] =
   {
     os.groupBy(_._1.id).values.map(_.toList).collect { case os @ (c, w, a, s, p) :: _ =>
-      Organic(c.id, c.name, w, os.map(_._3.map(_.id)).flatten, s, p)
+      Organic(c.id, c.name, c.faction.map(Faction(_)), w, os.map(_._3.map(_.id)).flatten, s, p)
     }.toSeq.sortBy(_.id)
   }
     
@@ -30,7 +31,7 @@ trait PocQueries { self: PocDatabase =>
       DroidDto)]): Seq[Droid] =
   {
     ds.groupBy(_._1.id).values.map(_.toList).collect { case ds @ (c, w, a, d) :: _ =>
-      Droid(c.id, c.name, w, ds.map(_._3.map(_.id)).flatten, DroidFunction(d.primaryFunction))
+      Droid(c.id, c.name, c.faction.map(Faction(_)), w, ds.map(_._3.map(_.id)).flatten, DroidFunction(d.primaryFunction))
     }.toSeq.sortBy(_.id)
   }
   
@@ -45,8 +46,8 @@ trait PocQueries { self: PocDatabase =>
   {
     cs.groupBy(_._1.id).values.map(_.toList).collect { case cs @ (c, w, a, o, s, p, d) :: _ =>
       o.toRight(d.get).fold(
-          d => Droid(c.id, c.name, w, cs.map(_._3.map(_.id)).flatten, DroidFunction(d.primaryFunction)),
-          o => Organic(c.id, c.name, w, cs.map(_._3.map(_.id)).flatten, s.get, p.get))
+          d => Droid(c.id, c.name, c.faction.map(Faction(_)), w, cs.map(_._3.map(_.id)).flatten, DroidFunction(d.primaryFunction)),
+          o => Organic(c.id, c.name, c.faction.map(Faction(_)), w, cs.map(_._3.map(_.id)).flatten, s.get, p.get))
     }.toSeq.sortBy(_.id)
   }
   

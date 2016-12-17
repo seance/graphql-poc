@@ -3,6 +3,7 @@ query FetchCharacters($episode: Episode) {
     id
     kind
     name
+    faction
     favoriteWeapon {
       name
     }
