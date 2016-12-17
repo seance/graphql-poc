@@ -1,5 +1,6 @@
 import React, { Component, PropTypes as P } from 'react'
 import { connect } from 'react-redux'
+import { push } from 'redux-router'
 
 import { fetchCharacters } from '../actions/home'
 import CharacterList from '../components/characterList'
@@ -34,7 +35,26 @@ class Home extends Component {
   }
 
   renderCharacterList(characters) {
-    return <CharacterList characters={characters}/>
+    return (
+      <div>
+        <h2>The Characters</h2>
+        <CharacterList characters={characters}
+          clickCharacter={this.clickHandler('/character', 'characterId')}
+          clickPlanet={this.clickHandler('/planet', 'planetId')}
+          clickSpecies={this.clickHandler('/species', 'speciesId')}/>
+      </div>
+    )
+  }
+
+  clickHandler(path, qname) {
+    const { push } = this.props
+    return id => e => {
+      e.preventDefault()
+      push({
+        pathname: path,
+        query: { [qname]: id }
+      })
+    }
   }
 }
 
@@ -43,5 +63,6 @@ export default connect(state => ({
   ...state.home.toJS()
 }), {
   // mapDispatchToProps
-  fetchCharacters
+  fetchCharacters,
+  push
 })(Home)

@@ -4,7 +4,10 @@ import R from 'ramda'
 export default class Character extends Component {
 
   static propTypes = {
-    character: P.object.isRequired,
+    character     : P.object.isRequired,
+    clickCharacter: P.func.isRequired,
+    clickPlanet   : P.func.isRequired,
+    clickSpecies  : P.func.isRequired,
   }
 
   render() {
@@ -15,21 +18,29 @@ export default class Character extends Component {
   }
 
   renderOrganic(c) {
+    const {
+      clickCharacter,
+      clickPlanet,
+      clickSpecies
+    } = this.props
+
     return (
       <div className="character character-organic">
-        <div className="species-panel">
+        <div className="species-panel" onClick={clickSpecies(c.species.id)}>
           <div className="species-icon"></div>
-          <div className="species-name">{c.species.name}</div>
+          <div className="species-name">
+            {c.species.name}
+          </div>
         </div>
         <div className="info-panel">
-          <div className="name">{c.name}</div>
+          <div className="name" onClick={clickCharacter(c.id)}>{c.name}</div>
           <div className="weapon-panel">
             <div className="weapon-icon">Favorite weapon</div>
             <div className="favorite-weapon">
-              {R.pathOr('No favorite weapon', ['favoriteWeapon', 'name'], c)}
+              {R.pathOr('None', ['favoriteWeapon', 'name'], c)}
             </div>
           </div>
-          <div className="planet-panel">
+          <div className="planet-panel" onClick={clickPlanet(c.homePlanet.id)}>
             <div className="planet-icon">Home planet</div>
             <div className="planet-name">{c.homePlanet.name}</div>
           </div>
@@ -39,6 +50,12 @@ export default class Character extends Component {
   }
 
   renderDroid(c) {
+    const {
+      clickCharacter,
+      clickPlanet,
+      clickSpecies
+    } = this.props
+
     return (
       <div className="character character-droid">
         <div className="droid-panel">
@@ -46,11 +63,11 @@ export default class Character extends Component {
           <div className="droid-label">Droid</div>
         </div>
         <div className="info-panel">
-          <div className="name">{c.name}</div>
+          <div className="name" onClick={clickCharacter(c.id)}>{c.name}</div>
           <div className="weapon-panel">
             <div className="weapon-icon">Favorite weapon</div>
             <div className="favorite-weapon">
-              {R.pathOr('No favorite weapon', ['favoriteWeapon', 'name'], c)}
+              {R.pathOr('None', ['favoriteWeapon', 'name'], c)}
             </div>
           </div>
           <div className="function-panel">
@@ -60,5 +77,12 @@ export default class Character extends Component {
         </div>
       </div>
     )
+  }
+
+  clickCharacter(c) {
+    return e => {
+      e.preventDefault()
+      this.props.clickCharacter(c)
+    }
   }
 }

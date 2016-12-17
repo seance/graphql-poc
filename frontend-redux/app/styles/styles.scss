@@ -71,6 +71,16 @@ body {
   }
 }
 
+.character-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .associate-list, .character {
+    width: 768px;
+  }
+}
+
 .character {
   display: flex;
   flex-direction: row;
@@ -86,6 +96,7 @@ body {
     .name {
       font-size: 2.5rem;
       padding-bottom: 1rem;
+      cursor: pointer;
     }
 
     .weapon-panel {
@@ -112,6 +123,7 @@ body {
       flex-direction: column;
       align-items: center;
       flex: 2;
+      cursor: pointer;
 
       .species-icon {
         width: 100px;
@@ -129,6 +141,7 @@ body {
       display: flex;
       flex-direction: row;
       line-height: 30px;
+      cursor: pointer;
 
       .planet-icon {
         height: 30px;
@@ -226,5 +239,38 @@ body {
         padding-right: 10px;
       }
     }
+  }
+}
+
+.associate {
+  display: flex;
+  flex-direction: row;
+  background-color: rgba(255, 255, 255, 0.4);
+  padding: .5rem 1rem;
+  cursor: pointer;
+
+  .associate-organic {
+    height: 30px;
+    line-height: 30px;
+    background: url('/images/organic.png') no-repeat;
+    background-size: contain;
+    background-position: left middle;
+    padding-left: 40px;
+    padding-right: 10px;
+  }
+
+  .associate-droid {
+    height: 30px;
+    line-height: 30px;
+    background: url('/images/droid.png') no-repeat;
+    background-size: contain;
+    background-position: left middle;
+    padding-left: 40px;
+    padding-right: 10px;
+  }
+
+  .associate-relation {
+    line-height: 30px;
+    color: dimgray;
   }
 }

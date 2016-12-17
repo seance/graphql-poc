@@ -1,5 +1,5 @@
-query FetchCharacters($episode: Episode) {
-  characters(episode: $episode) {
+query FetchCharacterAndAssocs($characterId: ID!) {
+  character(characterId: $characterId) {
     id
     kind
     name
@@ -8,6 +8,14 @@ query FetchCharacters($episode: Episode) {
     }
     ...organicFields
     ...droidFields
+    associates {
+      relation
+      character {
+        id
+        kind
+        name
+      }
+    }
   }
 }
 

@@ -34,7 +34,12 @@ class Planets extends Component {
   }
 
   renderPlanetList(planets) {
-    return <PlanetList planets={planets}/>
+    return (
+      <div>
+        <h2>The Planets</h2>
+        <PlanetList planets={planets}/>
+      </div>
+    )
   }
 }
 

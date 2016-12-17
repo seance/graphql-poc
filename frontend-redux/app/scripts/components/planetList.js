@@ -13,12 +13,9 @@ export default class PlanetList extends Component {
     const { planets } = this.props
     return (
       <div className="planet-list">
-        <h2>The Planets</h2>
-        <div className="planet-list-items">
-          {planets.map(p => (
-            <Planet key={p.id} planet={p}/>
-          ))}
-        </div>
+        {planets.map(p => (
+          <Planet key={p.id} planet={p}/>
+        ))}
       </div>
     )
   }
