@@ -3,7 +3,7 @@ import { FetchCharacterAndAssocs } from '../actions/characterPage'
 
 const initialState = Map({
   isFetching: true,
-  character: undefined
+  character: null
 })
 
 export default (state = initialState, action) => {
