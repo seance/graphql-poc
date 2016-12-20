@@ -18,7 +18,21 @@ class App extends Component {
     return (
       <div>
         <header className="header">
-          <h1>Star Wars</h1>
+          <div className="header-title">
+            <h1>
+              Star Wars
+              <span className="by"> by </span>
+            </h1>
+            <a href="https://facebook.github.io/react/" target="_blank">
+              <div className="header-icon icon-react"></div>
+            </a>
+            <a href="http://redux.js.org/" target="_blank">
+              <div className="header-icon icon-redux"></div>
+            </a>
+            <a href="http://graphql.org/" target="_blank">
+              <div className="header-icon icon-graphql"></div>
+            </a>
+          </div>
           <nav>
             <ul>
               <li className={active.home}><span onClick={this.clickNav('/')}>Home</span></li>

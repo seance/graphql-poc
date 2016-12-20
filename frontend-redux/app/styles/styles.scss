@@ -13,9 +13,38 @@ body {
 .header {
   display: flex;
   flex-direction: column;
+  background: linear-gradient(to top, lightgray, silver);
 
-  h1 {
-    text-align: center;
+  .header-title {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    .by {
+      margin: 0 10px;
+    }
+
+    .header-icon {
+      width: 32px;
+      height: 32px;
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+      margin: 4px;
+    }
+
+    .icon-react {
+      background-image: url('/images/react.png');
+    }
+
+    .icon-redux {
+      background-image: url('/images/redux.png');
+    }
+
+    .icon-graphql {
+      background-image: url('/images/graphql.png');
+    }
   }
 
   nav {
