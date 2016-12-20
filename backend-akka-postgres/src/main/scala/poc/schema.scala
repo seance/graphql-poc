@@ -103,8 +103,10 @@ trait PocSchema { self: PocDatabase with PocQueries =>
       "A comment from one character to another",
       fields[Database, Comment](
           Field("id", IDType, resolve = _.value.id.toString),
-          Field("commenter", CharacterType, resolve = c => findCharacter(c.ctx)(c.value.commenterId)),
-          Field("commentee", CharacterType, resolve = c => findCharacter(c.ctx)(c.value.commenteeId)),
+          Field("commenter", CharacterType, resolve = c =>
+            findCharacter(c.ctx)(c.value.commenterId).map(_.getOrElse(null))),
+          Field("commentee", CharacterType, resolve = c =>
+            findCharacter(c.ctx)(c.value.commenteeId).map(_.getOrElse(null))),
           Field("replyToId", OptionType(IDType), resolve = _.value.replyToId.map(_.toString)),
           Field("comment", StringType, resolve = _.value.comment)))
 
@@ -122,6 +124,7 @@ trait PocSchema { self: PocDatabase with PocQueries =>
   implicit val commentInputDecoder = deriveDecoder[CommentInput]
   
   val CharIdArg = Argument("characterId", IDType, "Character id")
+  val PlanetIdArg = Argument("planetId", IDType, "Planet id")
   val EpisodeArg = Argument("episode", OptionInputType(EpisodeType), "Optionally limit query to an episode")
   val CommentInputArg = Argument("commentInput", CommentInputType, "Comment input")
 
@@ -170,6 +173,11 @@ trait PocSchema { self: PocDatabase with PocQueries =>
           Some("Find character by id"),
           arguments = CharIdArg :: Nil,
           resolve = c => findCharacter(c.ctx)((c arg CharIdArg).toInt)),
+      Field("planet",
+          OptionType(PlanetType),
+          Some("Find planet by id"),
+          arguments = PlanetIdArg :: Nil,
+          resolve = c => findPlanet(c.ctx)((c arg PlanetIdArg).toInt)),
       Field("associatesByCharacter",
           ListType(AssociationType),
           Some("Associates of a character"),

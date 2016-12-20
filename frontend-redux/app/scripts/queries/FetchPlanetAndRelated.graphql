@@ -1,0 +1,27 @@
+query FetchPlanetAndRelated($planetId: ID!) {
+  planet(planetId: $planetId) {
+    name
+    ecology
+    species {
+      id
+      name
+    }
+    natives {
+      id
+      kind
+      name
+      faction
+      favoriteWeapon {
+        name
+      }
+      species {
+        id
+        name
+      }
+      homePlanet {
+        id
+        name
+      }
+    }
+  }
+}

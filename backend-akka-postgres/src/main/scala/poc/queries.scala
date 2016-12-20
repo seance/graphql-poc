@@ -144,6 +144,11 @@ trait PocQueries { self: PocDatabase =>
   }
   yield p
   
+  def queryPlanet(planetId: Int) = for {
+    p <- Planets if p.id === planetId
+  }
+  yield p
+  
   def querySpecies() = for {
     s <- Species
   }
@@ -186,7 +191,7 @@ trait PocQueries { self: PocDatabase =>
   }
     
   def findCharacter(db: Database)(characterId: Int) = {
-    db.run(queryCharacterPolymorphic(characterId).result).map(mapCharacters(_).head)
+    db.run(queryCharacterPolymorphic(characterId).result).map(mapCharacters(_).headOption)
   }
   
   def findSpeciesByPlanet(db: Database)(planetId: Int) = {
@@ -204,6 +209,10 @@ trait PocQueries { self: PocDatabase =>
   def findPlanets(db: Database) = {
     db.run(queryPlanets.result)
   }
+  
+  def findPlanet(db: Database)(planetId: Int) = {
+    db.run(queryPlanet(planetId).result.headOption)
+  } 
   
   def findSpecies(db: Database) = {
     db.run(querySpecies.result)
