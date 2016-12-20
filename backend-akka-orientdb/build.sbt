@@ -20,7 +20,13 @@ libraryDependencies ++= Seq(
   "de.heikoseeberger" %% "akka-http-circe" % "1.11.0-M1",
   "org.sangria-graphql" %% "sangria" % "1.0.0-RC3",
   "org.sangria-graphql" %% "sangria-circe" % "0.6.0",
+  "io.circe" %% "circe-parser" % "0.6.0",
+  "io.circe" %% "circe-optics" % "0.6.0",
   "com.michaelpollmeier" %% "gremlin-scala" % "3.2.3.1",
   "com.michaelpollmeier" % "orientdb-gremlin" % "3.2.3.0")
+  
+def oneJarMappings(path: String) = (file(path) ** "*.*").get.map { f =>
+  f -> f.getPath.replaceFirst(s"$path/", "")
+}
 
-fork := true
+mappings in oneJar ++= oneJarMappings("src/main/resources")

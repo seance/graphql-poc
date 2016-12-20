@@ -15,3 +15,31 @@ trait PocDatabase {
     result
   }
 }
+
+@label("Weapon")
+case class WeaponDto(
+    id: Int,
+    name: String)
+
+@label("Species")
+case class SpeciesDto(
+    id: Int,
+    name: String)
+    
+@label("Planet")
+case class PlanetDto(
+    id: Int,
+    name: String,
+    ecology: String)
+
+@label("Organic")
+case class OrganicDto(
+    id: Int,
+    name: String)
+
+@label("Droid")
+case class DroidDto(
+    id: Int,
+    name: String,
+    primaryFunction: Int)
+    

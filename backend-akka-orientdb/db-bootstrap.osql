@@ -1,5 +1,114 @@
 CREATE DATABASE PLOCAL:/orientdb/databases/pocdb;
 
-CREATE CLASS V_foo extends V;
-CREATE VERTEX V_foo CONTENT {"bar": "hello", "zut": 42};
-CREATE VERTEX V_foo CONTENT {"bar": "akka/orientdb", "zut": 13};
+-- Schema
+
+CREATE CLASS Weapon extends V;
+CREATE PROPERTY Weapon.id INTEGER;
+CREATE PROPERTY Weapon.name STRING;
+CREATE INDEX Weapon.id UNIQUE;
+CREATE INDEX Weapon.name UNIQUE;
+
+CREATE CLASS Species extends V;
+CREATE PROPERTY Species.id INTEGER;
+CREATE PROPERTY Species.name STRING;
+CREATE INDEX Species.id UNIQUE;
+CREATE INDEX Species.name UNIQUE;
+
+CREATE CLASS Planet extends V;
+CREATE PROPERTY Planet.id INTEGER;
+CREATE PROPERTY Planet.name STRING;
+CREATE PROPERTY Planet.ecology STRING;
+CREATE INDEX Planet.id UNIQUE;
+CREATE INDEX Planet.name UNIQUE;
+
+CREATE CLASS Character extends V ABSTRACT;
+CREATE PROPERTY Character.id INTEGER;
+CREATE PROPERTY Character.kind STRING;
+CREATE PROPERTY Character.name STRING;
+CREATE PROPERTY Character.faction INTEGER;
+CREATE INDEX Character.id UNIQUE;
+
+CREATE CLASS Organic extends Character;
+
+CREATE CLASS Droid extends Character;
+CREATE PROPERTY Droid.primaryFunction INTEGER;
+
+CREATE CLASS FavoriteWeapon extends E;
+CREATE PROPERTY FavoriteWeapon.out LINK Character;
+CREATE PROPERTY FavoriteWeapon.in LINK Weapon;
+
+CREATE CLASS IsSpecies extends E;
+CREATE PROPERTY IsSpecies.out LINK Organic;
+CREATE PROPERTY IsSpecies.in LINK Species;
+CREATE INDEX UniqueIsSpecies ON IsSpecies(out, in) UNIQUE;
+
+CREATE CLASS HomePlanet extends E;
+CREATE PROPERTY HomePlanet.out LINK Organic;
+CREATE PROPERTY HomePlanet.in LINK Planet;
+CREATE INDEX UniqueHomePlanet ON HomePlanet(out, in) UNIQUE;
+
+-- Data
+
+CREATE VERTEX Weapon SET id = 1, name = "Lightsaber";
+CREATE VERTEX Weapon SET id = 2, name = "DL-44 blaster";
+CREATE VERTEX Weapon SET id = 3, name = "Bowcaster";
+CREATE VERTEX Weapon SET id = 4, name = "Blaster rifle";
+
+CREATE VERTEX Species SET id = 1, name = "Human";
+CREATE VERTEX Species SET id = 2, name = "Wookiee";
+CREATE VERTEX Species SET id = 3, name = "Mon Calamari";
+CREATE VERTEX Species SET id = 4, name = "Sullustan";
+
+CREATE VERTEX Planet SET id = 1, name = "Tatooine", ecology = "Desert";
+CREATE VERTEX Planet SET id = 2, name = "Alderaan", ecology = "Temperate";
+CREATE VERTEX Planet SET id = 3, name = "Corellia", ecology = "Urban";
+CREATE VERTEX Planet SET id = 4, name = "Kashyyyk", ecology = "Forested";
+CREATE VERTEX Planet SET id = 5, name = "Socorro", ecology = "Desert";
+CREATE VERTEX Planet SET id = 6, name = "Dac", ecology = "Aquatic";
+CREATE VERTEX Planet SET id = 7, name = "Sullust", ecology = "Volcanic";
+CREATE VERTEX Planet SET id = 8, name = "Naboo", ecology = "Temperate";
+CREATE VERTEX Planet SET id = 9, name = "Kamino", ecology = "Aquatic";
+
+CREATE VERTEX Organic SET id = 1, kind = "organic", name = "Luke Skywalker", faction = 1;
+CREATE VERTEX Organic SET id = 2, kind = "organic", name = "Leia Organa", faction = 1;
+CREATE VERTEX Organic SET id = 3, kind = "organic", name = "Han Solo", faction = 1;
+CREATE VERTEX Organic SET id = 4, kind = "organic", name = "Chewbacca", faction = 1;
+CREATE VERTEX Organic SET id = 5, kind = "organic", name = "Lando Calrissian", faction = 1;
+CREATE VERTEX Organic SET id = 6, kind = "organic", name = "Gial Ackbar", faction = 1;
+CREATE VERTEX Organic SET id = 7, kind = "organic", name = "Nien Nunb", faction = 1;
+CREATE VERTEX Organic SET id = 8, kind = "organic", name = "Palpatine", faction = 2;
+CREATE VERTEX Organic SET id = 9, kind = "organic", name = "Darth Vader", faction = 2;
+CREATE VERTEX Organic SET id = 10, kind = "organic", name = "Boba Fett", faction = NULL;
+
+CREATE VERTEX Droid SET id = 11, kind = "droid", name = "R2-D2", faction = 1, primaryFunction = 1;
+CREATE VERTEX Droid SET id = 12, kind = "droid", name = "C-3PO", faction = 1, primaryFunction = 2;
+CREATE VERTEX Droid SET id = 13, kind = "droid", name = "IG-88", faction = NULL, primaryFunction = 3;
+
+CREATE EDGE FavoriteWeapon FROM (SELECT FROM Organic WHERE id = 1) TO (SELECT FROM Weapon WHERE id = 1);
+CREATE EDGE FavoriteWeapon FROM (SELECT FROM Organic WHERE id = 3) TO (SELECT FROM Weapon WHERE id = 2);
+CREATE EDGE FavoriteWeapon FROM (SELECT FROM Organic WHERE id = 4) TO (SELECT FROM Weapon WHERE id = 3);
+CREATE EDGE FavoriteWeapon FROM (SELECT FROM Organic WHERE id = 9) TO (SELECT FROM Weapon WHERE id = 1);
+CREATE EDGE FavoriteWeapon FROM (SELECT FROM Organic WHERE id = 10) TO (SELECT FROM Weapon WHERE id = 4);
+CREATE EDGE FavoriteWeapon FROM (SELECT FROM Droid WHERE id = 13) TO (SELECT FROM Weapon WHERE id = 4);
+
+CREATE EDGE IsSpecies FROM (SELECT FROM Organic WHERE id = 1) TO (SELECT FROM Species WHERE id = 1);
+CREATE EDGE IsSpecies FROM (SELECT FROM Organic WHERE id = 2) TO (SELECT FROM Species WHERE id = 1);
+CREATE EDGE IsSpecies FROM (SELECT FROM Organic WHERE id = 3) TO (SELECT FROM Species WHERE id = 1);
+CREATE EDGE IsSpecies FROM (SELECT FROM Organic WHERE id = 5) TO (SELECT FROM Species WHERE id = 1);
+CREATE EDGE IsSpecies FROM (SELECT FROM Organic WHERE id = 8) TO (SELECT FROM Species WHERE id = 1);
+CREATE EDGE IsSpecies FROM (SELECT FROM Organic WHERE id = 9) TO (SELECT FROM Species WHERE id = 1);
+CREATE EDGE IsSpecies FROM (SELECT FROM Organic WHERE id = 10) TO (SELECT FROM Species WHERE id = 1);
+CREATE EDGE IsSpecies FROM (SELECT FROM Organic WHERE id = 4) TO (SELECT FROM Species WHERE id = 2);
+CREATE EDGE IsSpecies FROM (SELECT FROM Organic WHERE id = 6) TO (SELECT FROM Species WHERE id = 3);
+CREATE EDGE IsSpecies FROM (SELECT FROM Organic WHERE id = 7) TO (SELECT FROM Species WHERE id = 4);
+
+CREATE EDGE HomePlanet FROM (SELECT FROM Organic WHERE id = 1) TO (SELECT FROM Planet WHERE id = 1);
+CREATE EDGE HomePlanet FROM (SELECT FROM Organic WHERE id = 2) TO (SELECT FROM Planet WHERE id = 2);
+CREATE EDGE HomePlanet FROM (SELECT FROM Organic WHERE id = 3) TO (SELECT FROM Planet WHERE id = 3);
+CREATE EDGE HomePlanet FROM (SELECT FROM Organic WHERE id = 4) TO (SELECT FROM Planet WHERE id = 4);
+CREATE EDGE HomePlanet FROM (SELECT FROM Organic WHERE id = 5) TO (SELECT FROM Planet WHERE id = 5);
+CREATE EDGE HomePlanet FROM (SELECT FROM Organic WHERE id = 6) TO (SELECT FROM Planet WHERE id = 6);
+CREATE EDGE HomePlanet FROM (SELECT FROM Organic WHERE id = 7) TO (SELECT FROM Planet WHERE id = 7);
+CREATE EDGE HomePlanet FROM (SELECT FROM Organic WHERE id = 8) TO (SELECT FROM Planet WHERE id = 8);
+CREATE EDGE HomePlanet FROM (SELECT FROM Organic WHERE id = 9) TO (SELECT FROM Planet WHERE id = 1);
+CREATE EDGE HomePlanet FROM (SELECT FROM Organic WHERE id = 10) TO (SELECT FROM Planet WHERE id = 9);
