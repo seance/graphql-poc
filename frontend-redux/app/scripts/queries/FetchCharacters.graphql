@@ -1,5 +1,5 @@
-query FetchCharacters($episode: Episode) {
-  characters(episode: $episode) {
+query FetchCharacters {
+  characters {
     id
     kind
     name
