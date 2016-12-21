@@ -47,6 +47,16 @@ CREATE PROPERTY HomePlanet.out LINK Organic;
 CREATE PROPERTY HomePlanet.in LINK Planet;
 CREATE INDEX UniqueHomePlanet ON HomePlanet(out, in) UNIQUE;
 
+CREATE SEQUENCE association_id_seq TYPE ORDERED START 1;
+
+CREATE CLASS Association extends E;
+CREATE PROPERTY Association.assocId INTEGER;
+CREATE PROPERTY Association.out LINK Character;
+CREATE PROPERTY Association.in LINK Character;
+CREATE PROPERTY Association.relation STRING;
+CREATE INDEX Association.assocId UNIQUE;
+CREATE INDEX UniqueAssociation ON Association(out, in) UNIQUE;
+
 -- Data
 
 CREATE VERTEX Weapon SET id = 1, name = "Lightsaber";
@@ -112,3 +122,58 @@ CREATE EDGE HomePlanet FROM (SELECT FROM Organic WHERE id = 7) TO (SELECT FROM P
 CREATE EDGE HomePlanet FROM (SELECT FROM Organic WHERE id = 8) TO (SELECT FROM Planet WHERE id = 8);
 CREATE EDGE HomePlanet FROM (SELECT FROM Organic WHERE id = 9) TO (SELECT FROM Planet WHERE id = 1);
 CREATE EDGE HomePlanet FROM (SELECT FROM Organic WHERE id = 10) TO (SELECT FROM Planet WHERE id = 9);
+
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 1) TO (SELECT FROM Organic WHERE id = 2) SET assocId = sequence("association_id_seq").next(), relation = "brother";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 1) TO (SELECT FROM Organic WHERE id = 3) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 1) TO (SELECT FROM Organic WHERE id = 4) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 1) TO (SELECT FROM Organic WHERE id = 5) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 1) TO (SELECT FROM Organic WHERE id = 9) SET assocId = sequence("association_id_seq").next(), relation = "son";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 1) TO (SELECT FROM Droid WHERE id = 11) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 1) TO (SELECT FROM Droid WHERE id = 12) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 2) TO (SELECT FROM Organic WHERE id = 1) SET assocId = sequence("association_id_seq").next(), relation = "sister";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 2) TO (SELECT FROM Organic WHERE id = 3) SET assocId = sequence("association_id_seq").next(), relation = "lover";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 2) TO (SELECT FROM Organic WHERE id = 4) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 2) TO (SELECT FROM Organic WHERE id = 5) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 2) TO (SELECT FROM Organic WHERE id = 9) SET assocId = sequence("association_id_seq").next(), relation = "daughter";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 2) TO (SELECT FROM Droid WHERE id = 11) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 2) TO (SELECT FROM Droid WHERE id = 12) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 3) TO (SELECT FROM Organic WHERE id = 1) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 3) TO (SELECT FROM Organic WHERE id = 2) SET assocId = sequence("association_id_seq").next(), relation = "lover";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 3) TO (SELECT FROM Organic WHERE id = 4) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 3) TO (SELECT FROM Organic WHERE id = 5) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 3) TO (SELECT FROM Droid WHERE id = 11) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 3) TO (SELECT FROM Droid WHERE id = 12) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 4) TO (SELECT FROM Organic WHERE id = 1) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 4) TO (SELECT FROM Organic WHERE id = 2) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 4) TO (SELECT FROM Organic WHERE id = 3) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 4) TO (SELECT FROM Organic WHERE id = 5) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 4) TO (SELECT FROM Droid WHERE id = 11) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 4) TO (SELECT FROM Droid WHERE id = 12) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 5) TO (SELECT FROM Organic WHERE id = 1) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 5) TO (SELECT FROM Organic WHERE id = 2) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 5) TO (SELECT FROM Organic WHERE id = 3) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 5) TO (SELECT FROM Organic WHERE id = 4) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 5) TO (SELECT FROM Organic WHERE id = 7) SET assocId = sequence("association_id_seq").next(), relation = "co-pilot";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 5) TO (SELECT FROM Droid WHERE id = 11) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 5) TO (SELECT FROM Droid WHERE id = 12) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 6) TO (SELECT FROM Organic WHERE id = 7) SET assocId = sequence("association_id_seq").next(), relation = "brother-in-arms";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 7) TO (SELECT FROM Organic WHERE id = 5) SET assocId = sequence("association_id_seq").next(), relation = "co-pilot";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 7) TO (SELECT FROM Organic WHERE id = 6) SET assocId = sequence("association_id_seq").next(), relation = "brother-in-arms";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 8) TO (SELECT FROM Organic WHERE id = 9) SET assocId = sequence("association_id_seq").next(), relation = "master";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 9) TO (SELECT FROM Organic WHERE id = 1) SET assocId = sequence("association_id_seq").next(), relation = "father";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 9) TO (SELECT FROM Organic WHERE id = 2) SET assocId = sequence("association_id_seq").next(), relation = "father";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 9) TO (SELECT FROM Organic WHERE id = 8) SET assocId = sequence("association_id_seq").next(), relation = "apprentice";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 9) TO (SELECT FROM Organic WHERE id = 10) SET assocId = sequence("association_id_seq").next(), relation = "patron";
+CREATE EDGE Association FROM (SELECT FROM Organic WHERE id = 10) TO (SELECT FROM Organic WHERE id = 9) SET assocId = sequence("association_id_seq").next(), relation = "contractor";
+CREATE EDGE Association FROM (SELECT FROM Droid WHERE id = 11) TO (SELECT FROM Organic WHERE id = 1) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Droid WHERE id = 11) TO (SELECT FROM Organic WHERE id = 2) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Droid WHERE id = 11) TO (SELECT FROM Organic WHERE id = 3) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Droid WHERE id = 11) TO (SELECT FROM Organic WHERE id = 4) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Droid WHERE id = 11) TO (SELECT FROM Organic WHERE id = 5) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Droid WHERE id = 11) TO (SELECT FROM Droid WHERE id = 12) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Droid WHERE id = 12) TO (SELECT FROM Organic WHERE id = 1) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Droid WHERE id = 12) TO (SELECT FROM Organic WHERE id = 2) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Droid WHERE id = 12) TO (SELECT FROM Organic WHERE id = 3) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Droid WHERE id = 12) TO (SELECT FROM Organic WHERE id = 4) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Droid WHERE id = 12) TO (SELECT FROM Organic WHERE id = 5) SET assocId = sequence("association_id_seq").next(), relation = "friend";
+CREATE EDGE Association FROM (SELECT FROM Droid WHERE id = 12) TO (SELECT FROM Droid WHERE id = 11) SET assocId = sequence("association_id_seq").next(), relation = "friend";
