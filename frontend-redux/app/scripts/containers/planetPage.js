@@ -41,7 +41,8 @@ class PlanetPage extends Component {
     return (
       <div>
         <h2>The Planet</h2>
-        <Planet planet={planet}/>
+        <Planet planet={planet}
+          clickPlanet={this.clickHandler('/planet', 'planetId')}/>
         <h2>Known Species</h2>
         TBD
         <h2>Notable Natives</h2>

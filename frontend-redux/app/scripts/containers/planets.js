@@ -1,5 +1,6 @@
 import React, { Component, PropTypes as P } from 'react'
 import { connect } from 'react-redux'
+import { push } from 'redux-router'
 
 import { fetchPlanets } from '../actions/planets'
 import PlanetList from '../components/planetList'
@@ -37,9 +38,21 @@ class Planets extends Component {
     return (
       <div>
         <h2>The Planets</h2>
-        <PlanetList planets={planets}/>
+        <PlanetList planets={planets}
+          clickPlanet={this.clickHandler('/planet', 'planetId')}/>
       </div>
     )
+  }
+
+  clickHandler(path, qname) {
+    const { push } = this.props
+    return id => e => {
+      e.preventDefault()
+      push({
+        pathname: path,
+        query: { [qname]: id }
+      })
+    }
   }
 }
 
@@ -48,5 +61,6 @@ export default connect(state => ({
   ...state.planets.toJS()
 }), {
   // mapDispatchToProps
-  fetchPlanets
+  fetchPlanets,
+  push
 })(Planets)
