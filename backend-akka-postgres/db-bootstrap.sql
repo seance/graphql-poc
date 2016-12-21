@@ -141,7 +141,7 @@ INSERT INTO character_associations (target_id, source_id, relation) VALUES
   (4, 1, 'friend'), (4, 2, 'friend'), (4, 3, 'friend'), (4, 5, 'friend'), (4, 11, 'friend'), (4, 12, 'friend'), -- Chewie
   (5, 1, 'friend'), (5, 2, 'friend'), (5, 3, 'friend'), (5, 4, 'friend'), (5, 7, 'co-pilot'), (5, 11, 'friend'), (5, 12, 'friend'), -- Lando
   (6, 7, 'brother-in-arms'), -- Ackbar
-  (7, 6, 'brother-in-arms'), -- Nien
+  (7, 5, 'co-pilot'), (7, 6, 'brother-in-arms'), -- Nien
   (8, 9, 'apprentice'), -- Palpatine
   (9, 8, 'master'), (9, 10, 'contractor'), (9, 1, 'son'), (9, 2, 'daughter'), -- Vader
   (10, 9, 'patron'), -- Boba
