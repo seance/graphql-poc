@@ -63,7 +63,8 @@ trait PocSchema { self: PocDatabase with PocQueries =>
   val SpeciesType = ObjectType("Species", () => fields[Database, poc.models.Species](
       Field("id", IDType, resolve = _.value.id.toString),
       Field("name", StringType, resolve = _.value.name),
-      Field("planets", ListType(PlanetType), resolve = c => findPlanetsBySpecies(c.ctx)(c.value.id))))
+      Field("foundOn", ListType(PlanetType), resolve = c => findPlanetsBySpecies(c.ctx)(c.value.id)),
+      Field("notableMembers", ListType(OrganicType), resolve = c => findCharactersBySpecies(c.ctx)(c.value.id))))
       
   val AssociationType = ObjectType("Association", () => fields[Database, Association](
       Field("character", CharacterType, resolve = c => charsFetcher.defer(c.value.sourceId)),
@@ -125,6 +126,8 @@ trait PocSchema { self: PocDatabase with PocQueries =>
   
   val CharIdArg = Argument("characterId", IDType, "Character id")
   val PlanetIdArg = Argument("planetId", IDType, "Planet id")
+  val SpeciesIdArg = Argument("speciesId", OptionInputType(IDType), "Species id")
+  
   val EpisodeArg = Argument("episode", OptionInputType(EpisodeType), "Optionally limit query to an episode")
   val CommentInputArg = Argument("commentInput", CommentInputType, "Comment input")
 
@@ -159,11 +162,14 @@ trait PocSchema { self: PocDatabase with PocQueries =>
       Field("planets",
           ListType(PlanetType),
           Some("List known planets"),
-          resolve = c => findPlanets(c.ctx)),
+          resolve = c => findAllPlanets(c.ctx)),
       Field("species",
           ListType(SpeciesType),
           Some("List known species"),
-          resolve = c => findSpecies(c.ctx)),
+          arguments = SpeciesIdArg :: Nil,
+          resolve = c => c.arg(SpeciesIdArg)
+            .map(speciesId => findSpecies(c.ctx)(speciesId.toInt).map(_.toList))
+            .getOrElse(findAllSpecies(c.ctx))),
       Field("comments",
           ListType(CommentType),
           Some("Comments between characters"),

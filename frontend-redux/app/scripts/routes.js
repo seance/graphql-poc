@@ -7,6 +7,7 @@ import Planets from './containers/planets'
 import Species from './containers/species'
 import CharacterPage from './containers/characterPage'
 import PlanetPage from './containers/planetPage'
+import SpeciesPage from './containers/speciesPage'
 
 export default (
   <Route path="/" component={App}>
@@ -15,5 +16,6 @@ export default (
     <Route path="species" component={Species}/>
     <Route path="character/:characterId" component={CharacterPage}/>
     <Route path="planet/:planetId" component={PlanetPage}/>
+    <Route path="species/:speciesId" component={SpeciesPage}/>
   </Route>
 )

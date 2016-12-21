@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 
 import { fetchPlanetAndRelated } from '../actions/planetPage'
 import Planet from '../components/planet'
+import SpeciesList from '../components/speciesList'
 import CharacterList from '../components/characterList'
 
 class PlanetPage extends Component {
@@ -42,7 +43,7 @@ class PlanetPage extends Component {
         <h2>The Planet</h2>
         <Planet planet={planet}/>
         <h2>Known Species</h2>
-        TBD
+        <SpeciesList species={planet.species}/>
         <h2>Notable Natives</h2>
         <CharacterList characters={planet.natives}/>
       </div>

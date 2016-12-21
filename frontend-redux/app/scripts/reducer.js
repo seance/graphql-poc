@@ -5,6 +5,7 @@ import planetsReducer from './reducers/planets'
 import speciesReducer from './reducers/species'
 import characterPageReducer from './reducers/characterPage'
 import planetPageReducer from './reducers/planetPage'
+import speciesPageReducer from './reducers/speciesPage'
 
 export default combineReducers({
   router: routerStateReducer,
@@ -12,5 +13,6 @@ export default combineReducers({
   planets: planetsReducer,
   species: speciesReducer,
   characterPage: characterPageReducer,
-  planetPage: planetPageReducer
+  planetPage: planetPageReducer,
+  speciesPage: speciesPageReducer
 })

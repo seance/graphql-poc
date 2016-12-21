@@ -139,6 +139,11 @@ trait PocQueries { self: PocDatabase =>
   }
   yield p 
   
+  def queryOrganicsBySpecies(speciesId: Int) = for {
+    (c, w, a, s, p) <- queryOrganics if s.id === speciesId
+  }
+  yield (c, w, a, s, p)
+  
   def queryPlanets() = for {
     p <- Planets
   }
@@ -206,7 +211,11 @@ trait PocQueries { self: PocDatabase =>
     db.run(queryPlanetsBySpecies(speciesId).distinct.result)
   }
   
-  def findPlanets(db: Database) = {
+  def findCharactersBySpecies(db: Database)(speciesId: Int) = {
+    db.run(queryOrganicsBySpecies(speciesId).result).map(mapOrganics)
+  }
+  
+  def findAllPlanets(db: Database) = {
     db.run(queryPlanets.result)
   }
   
@@ -214,8 +223,12 @@ trait PocQueries { self: PocDatabase =>
     db.run(queryPlanet(planetId).result.headOption)
   } 
   
-  def findSpecies(db: Database) = {
+  def findAllSpecies(db: Database) = {
     db.run(querySpecies.result)
+  }
+  
+  def findSpecies(db: Database)(speciesId: Int) = {
+    db.run(querySpecies.filter(_.id === speciesId).result.headOption)
   }
   
   def findComments(db: Database) = {
