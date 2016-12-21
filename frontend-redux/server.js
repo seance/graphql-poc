@@ -32,9 +32,7 @@ proxy.on('error', (err, req, res) => {
 const server = express()
   .all('/backend1/*', (req, res) => {
     req.url = req.url.slice('/backend1/'.length);
-    setTimeout(function() {
-      proxy.web(req, res, { target: proxyTarget1 });
-    }, Math.random() * 1000)
+    proxy.web(req, res, { target: proxyTarget1 });
   })
   .all('/backend2/*', (req, res) => {
     req.url = req.url.slice('/backend2/'.length);
