@@ -6,27 +6,15 @@ import Character from './character'
 export default class CharacterList extends Component {
 
   static propTypes = {
-    characters    : P.arrayOf(P.object).isRequired,
-    clickCharacter: P.func.isRequired,
-    clickPlanet   : P.func.isRequired,
-    clickSpecies  : P.func.isRequired
+    characters: P.arrayOf(P.object).isRequired
   }
 
   render() {
-    const {
-      characters,
-      clickCharacter,
-      clickPlanet,
-      clickSpecies
-    } = this.props
-
+    const { characters } = this.props
     return (
       <div className="character-list">
         {characters.map(c => (
-          <Character key={c.id} character={c}
-            clickCharacter={clickCharacter}
-            clickPlanet={clickPlanet}
-            clickSpecies={clickSpecies}/>
+          <Character key={c.id} character={c}/>
         ))}
       </div>
     )

@@ -1,29 +1,29 @@
 import React, { Component, PropTypes as P } from 'react'
 import { connect } from 'react-redux'
 
-import { fetchPlanets } from '../actions/planets'
-import PlanetList from '../components/planetList'
+import { fetchSpecies } from '../actions/species'
+import SpeciesList from '../components/speciesList'
 
-class Planets extends Component {
+class Species extends Component {
 
   static propTypes = {
     isFetching: P.bool.isRequired,
-    planets   : P.arrayOf(P.object).isRequired
+    species   : P.arrayOf(P.object).isRequired
   }
 
   componentDidMount() {
-    const { fetchPlanets } = this.props
-    fetchPlanets()
+    const { fetchSpecies } = this.props
+    fetchSpecies()
   }
 
   render() {
-    const { isFetching, planets } = this.props
+    const { isFetching, species } = this.props
     const content = isFetching
       ? this.renderFetching()
-      : this.renderPlanetList(planets)
+      : this.renderSpeciesList(species)
 
     return (
-      <div className="main-planets">
+      <div className="main-species">
         {content}
       </div>
     )
@@ -33,11 +33,11 @@ class Planets extends Component {
     return <div className="progress"></div>
   }
 
-  renderPlanetList(planets) {
+  renderSpeciesList(species) {
     return (
       <div>
-        <h2>The Planets</h2>
-        <PlanetList planets={planets}/>
+        <h2>The Species</h2>
+        <SpeciesList species={species}/>
       </div>
     )
   }
@@ -45,8 +45,8 @@ class Planets extends Component {
 
 export default connect(state => ({
   // mapStateToProps
-  ...state.planets.toJS()
+  ...state.species.toJS()
 }), {
   // mapDispatchToProps
-  fetchPlanets
-})(Planets)
+  fetchSpecies
+})(Species)

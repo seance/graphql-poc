@@ -1,6 +1,5 @@
 import React, { Component, PropTypes as P } from 'react'
 import { connect } from 'react-redux'
-import { push } from 'redux-router'
 
 import { fetchCharacterAndAssocs } from '../actions/characterPage'
 import Character from '../components/character'
@@ -14,13 +13,13 @@ class CharacterPage extends Component {
   }
 
   componentDidMount() {
-    const { location } = this.props
-    this.fetchCharacterAndAssocs(location.query.characterId)
+    const { params } = this.props
+    this.fetchCharacterAndAssocs(params.characterId)
   }
 
   componentWillReceiveProps(nextProps) {
     const { isFetching, character } = this.props
-    const nextCharacterId = nextProps.location.query.characterId
+    const nextCharacterId = nextProps.params.characterId
 
     if (!isFetching && (!character || character.id != nextCharacterId)) {
       this.fetchCharacterAndAssocs(nextCharacterId)
@@ -54,26 +53,11 @@ class CharacterPage extends Component {
     return (
       <div>
         <h2>The Character</h2>
-        <Character character={character}
-          clickCharacter={this.clickHandler('/character', 'characterId')}
-          clickPlanet={this.clickHandler('/planet', 'planetId')}
-          clickSpecies={this.clickHandler('/species', 'speciesId')}/>
+        <Character character={character}/>
         <h2>Known Associates</h2>
-        <AssociateList associates={character.associates}
-          clickCharacter={this.clickHandler('/character', 'characterId')}/>
+        <AssociateList associates={character.associates}/>
       </div>
     )
-  }
-
-  clickHandler(path, qname) {
-    const { push } = this.props
-    return id => e => {
-      e.preventDefault()
-      push({
-        pathname: path,
-        query: { [qname]: id }
-      })
-    }
   }
 }
 
@@ -83,6 +67,5 @@ export default connect(state => ({
   ...state.characterPage.toJS()
 }), {
   // mapDispatchToProps
-  fetchCharacterAndAssocs,
-  push
+  fetchCharacterAndAssocs
 })(CharacterPage)

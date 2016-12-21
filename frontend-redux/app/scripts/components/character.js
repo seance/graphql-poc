@@ -1,13 +1,11 @@
 import React, { Component, PropTypes as P } from 'react'
+import { Link } from 'react-router'
 import R from 'ramda'
 
 export default class Character extends Component {
 
   static propTypes = {
-    character     : P.object.isRequired,
-    clickCharacter: P.func.isRequired,
-    clickPlanet   : P.func.isRequired,
-    clickSpecies  : P.func.isRequired,
+    character: P.object.isRequired
   }
 
   render() {
@@ -18,31 +16,29 @@ export default class Character extends Component {
   }
 
   renderOrganic(c) {
-    const {
-      clickCharacter,
-      clickPlanet,
-      clickSpecies
-    } = this.props
-
     return (
       <div className="character character-organic">
-        <div className="species-panel" onClick={clickSpecies(c.species.id)}>
-          <div className="species-icon"></div>
-          <div className="species-name">
-            {c.species.name}
+          <div className="species-panel">
+            <div className="species-icon"></div>
+            <div className="species-name">
+              <Link to={`/species/${c.species.id}`}>{c.species.name}</Link>
+            </div>
           </div>
-        </div>
         <div className="info-panel">
-          <div className="name" onClick={clickCharacter(c.id)}>{c.name}</div>
+          <div className="name">
+            <Link to={`/character/${c.id}`}>{c.name}</Link>
+          </div>
           <div className="weapon-panel">
             <div className="weapon-icon">Favorite weapon</div>
             <div className="favorite-weapon">
               {R.pathOr('None', ['favoriteWeapon', 'name'], c)}
             </div>
           </div>
-          <div className="planet-panel" onClick={clickPlanet(c.homePlanet.id)}>
+          <div className="planet-panel">
             <div className="planet-icon">Home planet</div>
-            <div className="planet-name">{c.homePlanet.name}</div>
+            <div className="planet-name">
+              <Link to={`/planet/${c.homePlanet.id}`}>{c.homePlanet.name}</Link>
+            </div>
           </div>
         </div>
         <div className="faction-panel">
@@ -54,12 +50,6 @@ export default class Character extends Component {
   }
 
   renderDroid(c) {
-    const {
-      clickCharacter,
-      clickPlanet,
-      clickSpecies
-    } = this.props
-
     return (
       <div className="character character-droid">
         <div className="droid-panel">
@@ -67,7 +57,7 @@ export default class Character extends Component {
           <div className="droid-label">Droid</div>
         </div>
         <div className="info-panel">
-          <div className="name" onClick={clickCharacter(c.id)}>{c.name}</div>
+          <div className="name">{c.name}</div>
           <div className="weapon-panel">
             <div className="weapon-icon">Favorite weapon</div>
             <div className="favorite-weapon">

@@ -1,0 +1,6 @@
+query FetchSpecies {
+  species {
+    id
+    name
+  }
+}

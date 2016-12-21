@@ -1,11 +1,10 @@
 import React, { Component, PropTypes as P } from 'react'
+import { Link } from 'react-router'
 import { connect } from 'react-redux'
-import { push } from 'redux-router'
 
 class App extends Component {
 
   static propTypes = {
-    push: P.func.isRequired
   }
 
   render() {
@@ -35,9 +34,9 @@ class App extends Component {
           </div>
           <nav>
             <ul>
-              <li className={active.home} onClick={this.clickNav('/')}>Home</li>
-              <li className={active.planets} onClick={this.clickNav('/planets')}>Planets</li>
-              <li className={active.species} onClick={this.clickNav('/species')}>Species</li>
+              <li><Link to={'/'} className={active.home}>Home</Link></li>
+              <li><Link to={'/planets'} className={active.planets}>Planets</Link></li>
+              <li><Link to={'/species'} className={active.species}>Species</Link></li>
             </ul>
           </nav>
         </header>
@@ -47,13 +46,6 @@ class App extends Component {
       </div>
     )
   }
-
-  clickNav(page) {
-    return e => {
-      e.preventDefault()
-      this.props.push(page)
-    }
-  }
 }
 
 export default connect(state => ({
@@ -61,5 +53,4 @@ export default connect(state => ({
   ...state.router
 }), {
   // mapDispatchToProps
-  push
 })(App)

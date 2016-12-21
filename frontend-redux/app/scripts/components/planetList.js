@@ -6,17 +6,15 @@ import Planet from './planet'
 export default class PlanetList extends Component {
 
   static propTypes = {
-    planets     : P.arrayOf(P.object).isRequired,
-    clickPlanet : P.func.isRequired
+    planets: P.arrayOf(P.object).isRequired
   }
 
   render() {
-    const { planets, clickPlanet } = this.props
+    const { planets } = this.props
     return (
       <div className="planet-list">
         {planets.map(p => (
-          <Planet key={p.id} planet={p}
-            clickPlanet={clickPlanet}/>
+          <Planet key={p.id} planet={p}/>
         ))}
       </div>
     )
