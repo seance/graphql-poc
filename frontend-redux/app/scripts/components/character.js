@@ -57,7 +57,9 @@ export default class Character extends Component {
           <div className="droid-label">Droid</div>
         </div>
         <div className="info-panel">
-          <div className="name">{c.name}</div>
+          <div className="name">
+            <Link to={`/character/${c.id}`}>{c.name}</Link>
+          </div>
           <div className="weapon-panel">
             <div className="weapon-icon">Favorite weapon</div>
             <div className="favorite-weapon">
