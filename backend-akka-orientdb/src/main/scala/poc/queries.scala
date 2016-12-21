@@ -80,11 +80,73 @@ trait PocQueries {
     )}
   }
   
-  def querySpecies(g: ScalaGraph) =
+  def queryAllSpecies(g: ScalaGraph) =
     g.V.hasLabel[SpeciesDto].map(_.toCC[SpeciesDto])
     
-  def queryPlanets(g: ScalaGraph) =
+  def queryAllPlanets(g: ScalaGraph) =
     g.V.hasLabel[PlanetDto].map(_.toCC[PlanetDto])
+    
+  def querySpecies(g: ScalaGraph)(speciesId: Int) =
+    g.V.hasLabel[SpeciesDto].has(Id, speciesId).map(_.toCC[SpeciesDto])
+    
+  def queryPlanet(g: ScalaGraph)(planetId: Int) =
+    g.V.hasLabel[PlanetDto].has(Id, planetId).map(_.toCC[PlanetDto])
+    
+  def querySpeciesByPlanet(g: ScalaGraph)(planetId: Int) =
+    g.V.hasLabel[PlanetDto].has(Id, planetId).in(HomePlanet).out(IsSpecies).dedup().toCC[SpeciesDto]
+  
+  def queryNativesByPlanet(g: ScalaGraph)(planetId: Int) = {
+    import scala.collection.JavaConversions._
+    
+    val organicL = StepLabel[Vertex]()
+    val weaponL = StepLabel[Option[Vertex]]()
+  
+    for {
+      (o, w) <- g.V.hasLabel[PlanetDto].has(Id, planetId).in(HomePlanet).as(organicL)
+        .coalesce[Option[Vertex]](
+            _.out(FavoriteWeapon).map(Some(_)),
+            _.constant(None)).as(weaponL)
+        .select((organicL, weaponL))
+      a <- o.inE(Association).fold
+      s <- o.out(IsSpecies)
+      p <- o.out(HomePlanet)
+    }
+    yield (
+        o.toCC[OrganicDto],
+        w.map(_.toCC[WeaponDto]),
+        a.map(_.property(AssocId).value).toList,
+        s.toCC[SpeciesDto],
+        p.toCC[PlanetDto]
+    )
+  }
+  
+  def queryPlanetsBySpecies(g: ScalaGraph)(speciesId: Int) =
+    g.V.hasLabel[SpeciesDto].has(Id, speciesId).in(IsSpecies).out(HomePlanet).toCC[PlanetDto]
+  
+  def queryOrganicsBySpecies(g: ScalaGraph)(speciesId: Int) = {
+    import scala.collection.JavaConversions._
+    
+    val organicL = StepLabel[Vertex]()
+    val weaponL = StepLabel[Option[Vertex]]()
+  
+    for {
+      (o, w) <- g.V.hasLabel[SpeciesDto].has(Id, speciesId).in(IsSpecies).as(organicL)
+        .coalesce[Option[Vertex]](
+            _.out(FavoriteWeapon).map(Some(_)),
+            _.constant(None)).as(weaponL)
+        .select((organicL, weaponL))
+      a <- o.inE(Association).fold
+      s <- o.out(IsSpecies)
+      p <- o.out(HomePlanet)
+    }
+    yield (
+        o.toCC[OrganicDto],
+        w.map(_.toCC[WeaponDto]),
+        a.map(_.property(AssocId).value).toList,
+        s.toCC[SpeciesDto],
+        p.toCC[PlanetDto]
+    )
+  }
   
   def findAllOrganics(g: ScalaGraph) = queryOrganics(g).toList.map { case (o, w, a, s, p) =>
     Organic(o.id, o.name, w.map(w => Weapon(w.id, w.name)), a, Species(s.id, s.name), Planet(p.id, p.name, p.ecology))
@@ -143,11 +205,47 @@ trait PocQueries {
     }
   }
   
-  def findPlanets(g: ScalaGraph) = queryPlanets(g).toList.map { p =>
+  def findAllPlanets(g: ScalaGraph) = queryAllPlanets(g).toList.map { p =>
     Planet(p.id, p.name, p.ecology)
   }
   
-  def findSpecies(g: ScalaGraph) = querySpecies(g).toList.map { s =>
+  def findPlanet(g: ScalaGraph)(planetId: Int) = {
+    queryPlanet(g)(planetId).headOption.map { p =>
+      Planet(p.id, p.name, p.ecology)
+    }
+  }
+  
+  def findAllSpecies(g: ScalaGraph) = queryAllSpecies(g).toList.map { s =>
     Species(s.id, s.name)
+  }
+  
+  def findSpecies(g: ScalaGraph)(speciesId: Int) = {
+    querySpecies(g)(speciesId).headOption.map { s =>
+      Species(s.id, s.name)
+    }
+  }
+  
+  def findSpeciesByPlanet(g: ScalaGraph)(planetId: Int) = {
+    querySpeciesByPlanet(g)(planetId).toList.map { s =>
+      Species(s.id, s.name)
+    }
+  }
+  
+  def findNativesByPlanet(g: ScalaGraph)(planetId: Int) = {
+    queryNativesByPlanet(g)(planetId).toList.map { case (o, w, a, s, p) =>
+      Organic(o.id, o.name, w.map(w => Weapon(w.id, w.name)), a, Species(s.id, s.name), Planet(p.id, p.name, p.ecology))
+    }
+  }
+  
+  def findPlanetsBySpecies(g: ScalaGraph)(speciesId: Int) = {
+    queryPlanetsBySpecies(g)(speciesId).toList.map { p =>
+      Planet(p.id, p.name, p.ecology)
+    }
+  }
+  
+  def findCharactersBySpecies(g: ScalaGraph)(speciesId: Int) = {
+    queryOrganicsBySpecies(g)(speciesId).toList.map { case (o, w, a, s, p) =>
+      Organic(o.id, o.name, w.map(w => Weapon(w.id, w.name)), a, Species(s.id, s.name), Planet(p.id, p.name, p.ecology))
+    }
   }
 }

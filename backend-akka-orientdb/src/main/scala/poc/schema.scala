@@ -30,15 +30,19 @@ trait PocSchema { self: PocQueries with PocDatabase =>
       Field("name", StringType, resolve = _.value.name)
   ))
   
-  val SpeciesType = ObjectType("Species", () => fields[Unit, Species](
-      Field("id", IDType, resolve = _.value.id.toString),
-      Field("name", StringType, resolve = _.value.name)
-  ))
-  
-  val PlanetType = ObjectType("Planet", () => fields[Unit, Planet](
+  val SpeciesType: ObjectType[Unit, Species] = ObjectType("Species", () => fields[Unit, Species](
       Field("id", IDType, resolve = _.value.id.toString),
       Field("name", StringType, resolve = _.value.name),
-      Field("ecology", StringType, resolve = _.value.ecology)
+      Field("foundOn", ListType(PlanetType), resolve = c => withGraph(findPlanetsBySpecies(_)(c.value.id))),
+      Field("notableMembers", ListType(OrganicType), resolve = c => withGraph(findCharactersBySpecies(_)(c.value.id)))
+  ))
+  
+  val PlanetType: ObjectType[Unit, Planet] = ObjectType("Planet", () => fields[Unit, Planet](
+      Field("id", IDType, resolve = _.value.id.toString),
+      Field("name", StringType, resolve = _.value.name),
+      Field("ecology", StringType, resolve = _.value.ecology),
+      Field("species", ListType(SpeciesType), resolve = c => withGraph(findSpeciesByPlanet(_)(c.value.id))),
+      Field("natives", ListType(OrganicType), resolve = c => withGraph(findNativesByPlanet(_)(c.value.id)))
   ))
   
   val AssociationType = ObjectType("Association", () => fields[Unit, Association](
@@ -71,12 +75,25 @@ trait PocSchema { self: PocQueries with PocDatabase =>
       interfaces[Unit, Droid](CharacterType),
       () => characterCommonFields[Droid] ++ fields[Unit, Droid](
           Field("primaryFunction", DroidFunctionType, resolve = _.value.primaryFunction)))
+          
+  val CharIdArg = Argument("characterId", IDType, "Character id")
+  val PlanetIdArg = Argument("planetId", IDType, "Planet id")
+  val SpeciesIdArg = Argument("speciesId", OptionInputType(IDType), "Species id, optionally")
   
   val QueryType = ObjectType("Query", fields[Unit, Unit](
       Field("characters", ListType(CharacterType), resolve = c => withGraph(findAllCharacters)),
-      Field("planets", ListType(PlanetType), resolve = c => withGraph(findPlanets)),
-      Field("species", ListType(SpeciesType), resolve = c => withGraph(findSpecies))
-      
+      Field("planets", ListType(PlanetType), resolve = c => withGraph(findAllPlanets)),
+      Field("species", ListType(SpeciesType),
+          arguments = SpeciesIdArg :: Nil,
+          resolve = c => c.arg(SpeciesIdArg)
+            .map(speciesId => withGraph(findSpecies(_)(speciesId.toInt).toList))
+            .getOrElse(withGraph(findAllSpecies))),
+      Field("character", OptionType(CharacterType),
+          arguments = CharIdArg :: Nil,
+          resolve = c => withGraph(findCharacter(_)((c arg CharIdArg).toInt))),
+      Field("planet", OptionType(PlanetType),
+          arguments = PlanetIdArg :: Nil,
+          resolve = c => withGraph(findPlanet(_)((c arg PlanetIdArg).toInt)))
   ))
       
   val PocSchema = Schema(QueryType, additionalTypes = List(OrganicType, DroidType))
