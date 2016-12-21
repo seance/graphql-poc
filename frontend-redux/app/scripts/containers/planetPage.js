@@ -10,7 +10,7 @@ class PlanetPage extends Component {
 
   static propTypes = {
     isFetching: P.bool.isRequired,
-    planet : P.object
+    planet    : P.object
   }
 
   componentDidMount() {
@@ -20,20 +20,9 @@ class PlanetPage extends Component {
     })
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { fetchPlanetAndRelated, isFetching, planet } = this.props
-    const nextPlanetId = nextProps.location.query.planetId
-
-    if (!isFetching && planet.id != nextPlanetId) {
-      fetchPlanetAndRelated({
-        planetId: nextPlanetId
-      })
-    }
-  }
-
   render() {
     const { isFetching, planet } = this.props
-    const content = isFetching
+    const content = isFetching || !planet
       ? this.renderFetching()
       : this.renderPlanetPage(planet)
 

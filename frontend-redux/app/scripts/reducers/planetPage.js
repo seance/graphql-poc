@@ -2,7 +2,7 @@ import Immutable, { Map, List } from 'immutable'
 import { FetchPlanetAndRelated } from '../actions/planetPage'
 
 const initialState = Map({
-  isFetching: true,
+  isFetching: false,
   planet: null
 })
 

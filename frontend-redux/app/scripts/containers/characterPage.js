@@ -14,26 +14,28 @@ class CharacterPage extends Component {
   }
 
   componentDidMount() {
-    const { fetchCharacterAndAssocs, location } = this.props
-    fetchCharacterAndAssocs({
-      characterId: location.query.characterId
-    })
+    const { location } = this.props
+    this.fetchCharacterAndAssocs(location.query.characterId)
   }
 
   componentWillReceiveProps(nextProps) {
-    const { fetchCharacterAndAssocs, isFetching, character } = this.props
+    const { isFetching, character } = this.props
     const nextCharacterId = nextProps.location.query.characterId
 
-    if (!isFetching && character.id != nextCharacterId) {
-      fetchCharacterAndAssocs({
-        characterId: nextCharacterId
-      })
+    if (!isFetching && (!character || character.id != nextCharacterId)) {
+      this.fetchCharacterAndAssocs(nextCharacterId)
     }
+  }
+
+  fetchCharacterAndAssocs(characterId) {
+    this.props.fetchCharacterAndAssocs({
+      characterId
+    })
   }
 
   render() {
     const { isFetching, character } = this.props
-    const content = isFetching
+    const content = isFetching || !character
       ? this.renderFetching()
       : this.renderCharacterPage(character)
 

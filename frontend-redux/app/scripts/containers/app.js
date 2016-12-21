@@ -35,9 +35,9 @@ class App extends Component {
           </div>
           <nav>
             <ul>
-              <li className={active.home}><span onClick={this.clickNav('/')}>Home</span></li>
-              <li className={active.planets}><span onClick={this.clickNav('/planets')}>Planets</span></li>
-              <li className={active.species}><span onClick={this.clickNav('/species')}>Species</span></li>
+              <li className={active.home} onClick={this.clickNav('/')}>Home</li>
+              <li className={active.planets} onClick={this.clickNav('/planets')}>Planets</li>
+              <li className={active.species} onClick={this.clickNav('/species')}>Species</li>
             </ul>
           </nav>
         </header>

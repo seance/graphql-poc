@@ -2,7 +2,7 @@ import Immutable, { Map, List } from 'immutable'
 import { FetchCharacterAndAssocs } from '../actions/characterPage'
 
 const initialState = Map({
-  isFetching: true,
+  isFetching: false,
   character: null
 })
 
