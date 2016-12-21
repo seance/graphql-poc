@@ -35,11 +35,13 @@ case class PlanetDto(
 @label("Organic")
 case class OrganicDto(
     id: Int,
-    name: String)
+    name: String,
+    faction: Option[Int])
 
 @label("Droid")
 case class DroidDto(
     id: Int,
     name: String,
+    faction: Option[Int],
     primaryFunction: Int)
     

@@ -17,6 +17,13 @@ trait PocSchema { self: PocQueries with PocDatabase =>
       
   val resolver = DeferredResolver.fetchers(assocsFetcher, charsFetcher)
   
+  val FactionType = EnumType(
+      "Faction",
+      Some("The Rebel Alliance or the Galactic Empire"),
+      List(
+          EnumValue("RebelAlliance", value = Faction.RebelAlliance),
+          EnumValue("GalacticEmpire", value = Faction.GalacticEmpire)))
+  
   val DroidFunctionType = EnumType(
       "DroidFunction",
       Some("Primary function of a droid"),
@@ -53,6 +60,7 @@ trait PocSchema { self: PocQueries with PocDatabase =>
       Field("id", IDType, resolve = _.value.id.toString),
       Field("kind", StringType, resolve = _.value.kind),
       Field("name", StringType, resolve = _.value.name),
+      Field("faction", OptionType(FactionType), resolve = _.value.faction),
       Field("favoriteWeapon", OptionType(WeaponType), resolve = _.value.favoriteWeapon),
       Field("associates", ListType(AssociationType), resolve = c => assocsFetcher.deferSeqOpt(c.value.assocIds)))
       

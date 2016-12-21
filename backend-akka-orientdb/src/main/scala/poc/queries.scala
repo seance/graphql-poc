@@ -25,6 +25,22 @@ trait PocQueries {
     def withFilter(p: E => Boolean) = g.filter(p)
   }
   
+  def mapFaction(f: Option[Int]) = f.flatMap(f => if (f == 0) None else Some(Faction(f)))
+  
+  def mapWeapon(w: Option[WeaponDto]) = w.map(w => Weapon(w.id, w.name))
+  
+  def mapSpecies(s: SpeciesDto) = Species(s.id, s.name)
+  
+  def mapPlanet(p: PlanetDto) = Planet(p.id, p.name, p.ecology)
+  
+  def mapOrganic: PartialFunction[(OrganicDto, Option[WeaponDto], Seq[Int], SpeciesDto, PlanetDto), Organic] = {
+    case (o, w, a, s, p) => Organic(o.id, o.name, mapFaction(o.faction), mapWeapon(w), a, mapSpecies(s), mapPlanet(p))
+  }
+  
+  def mapDroid: PartialFunction[(DroidDto, Option[WeaponDto], Seq[Int]), Droid] = {
+    case (d, w, a) => Droid(d.id, d.name, mapFaction(d.faction), mapWeapon(w), a, DroidFunction(d.primaryFunction))
+  }
+  
   def queryOrganics(g: ScalaGraph) = {
     import scala.collection.JavaConversions._
     
@@ -148,44 +164,32 @@ trait PocQueries {
     )
   }
   
-  def findAllOrganics(g: ScalaGraph) = queryOrganics(g).toList.map { case (o, w, a, s, p) =>
-    Organic(o.id, o.name, w.map(w => Weapon(w.id, w.name)), a, Species(s.id, s.name), Planet(p.id, p.name, p.ecology))
-  }
+  def findAllOrganics(g: ScalaGraph) = queryOrganics(g).toList.map(mapOrganic)
   
-  def findAllDroids(g: ScalaGraph) = queryDroids(g).toList.map { case (d, w, a) =>
-    Droid(d.id, d.name, w.map(w => Weapon(w.id, w.name)), a, DroidFunction(d.primaryFunction))
-  }
+  def findAllDroids(g: ScalaGraph) = queryDroids(g).toList.map(mapDroid)
   
   def findOrganics(g: ScalaGraph)(characterIds: Seq[Int]) = {
     queryOrganics(g).filter({ case (o, w, a, s, p) =>
       characterIds.contains(o.id)
-    }).toList.map { case (o, w, a, s, p) =>
-      Organic(o.id, o.name, w.map(w => Weapon(w.id, w.name)), a, Species(s.id, s.name), Planet(p.id, p.name, p.ecology))
-    }
+    }).toList.map(mapOrganic)
   }
   
   def findDroids(g: ScalaGraph)(characterIds: Seq[Int]) = {
     queryDroids(g).filter({ case (d, w, a) =>
       characterIds.contains(d.id)
-    }).toList.map { case (d, w, a) =>
-      Droid(d.id, d.name, w.map(w => Weapon(w.id, w.name)), a, DroidFunction(d.primaryFunction))
-    }
+    }).toList.map(mapDroid)
   }
   
   def findOrganic(g: ScalaGraph)(characterId: Int) = {
     queryOrganics(g).filter({ case (o, w, a, s, p) =>
       o.id == characterId
-    }).headOption.map { case (o, w, a, s, p) =>
-      Organic(o.id, o.name, w.map(w => Weapon(w.id, w.name)), a, Species(s.id, s.name), Planet(p.id, p.name, p.ecology))
-    }
+    }).headOption.map(mapOrganic)
   }
   
   def findDroid(g: ScalaGraph)(characterId: Int) = {
     queryDroids(g).filter({ case (d, w, a) =>
       d.id == characterId
-    }).headOption.map { case (d, w, a) =>
-      Droid(d.id, d.name, w.map(w => Weapon(w.id, w.name)), a, DroidFunction(d.primaryFunction))
-    }
+    }).headOption.map(mapDroid)
   }
   
   def findAllCharacters(g: ScalaGraph) =
@@ -232,9 +236,7 @@ trait PocQueries {
   }
   
   def findNativesByPlanet(g: ScalaGraph)(planetId: Int) = {
-    queryNativesByPlanet(g)(planetId).toList.map { case (o, w, a, s, p) =>
-      Organic(o.id, o.name, w.map(w => Weapon(w.id, w.name)), a, Species(s.id, s.name), Planet(p.id, p.name, p.ecology))
-    }
+    queryNativesByPlanet(g)(planetId).toList.map(mapOrganic)
   }
   
   def findPlanetsBySpecies(g: ScalaGraph)(speciesId: Int) = {
@@ -244,8 +246,6 @@ trait PocQueries {
   }
   
   def findCharactersBySpecies(g: ScalaGraph)(speciesId: Int) = {
-    queryOrganicsBySpecies(g)(speciesId).toList.map { case (o, w, a, s, p) =>
-      Organic(o.id, o.name, w.map(w => Weapon(w.id, w.name)), a, Species(s.id, s.name), Planet(p.id, p.name, p.ecology))
-    }
+    queryOrganicsBySpecies(g)(speciesId).toList.map(mapOrganic)
   }
 }
