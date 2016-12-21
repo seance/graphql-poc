@@ -26,7 +26,6 @@ import scala.concurrent.Future
 import scala.util._
 import scala.io._
 
-
 object WebServer extends App with Directives with PocSchema with PocQueries with PocDatabase {
 
   val config = ConfigFactory.load()
@@ -61,11 +60,9 @@ object WebServer extends App with Directives with PocSchema with PocQueries with
   
   def executeGraphQL(query: String, opName: Option[String], vars: Json): Future[(StatusCode, Json)] = {
     QueryParser.parse(query).map { queryDoc =>
-      withGraph { graph =>
-        Executor.execute(PocSchema, queryDoc, graph, (), opName, vars).map(OK -> _) recover {
-          case e: QueryAnalysisError => UnprocessableEntity -> e.resolveError
-          case e: ErrorWithResolver => InternalServerError -> e.resolveError
-        }
+      Executor.execute(PocSchema, queryDoc, (), (), opName, vars, deferredResolver = resolver).map(OK -> _) recover {
+        case e: QueryAnalysisError => UnprocessableEntity -> e.resolveError
+        case e: ErrorWithResolver => InternalServerError -> e.resolveError
       }
     } getOrElse badQuery
   }

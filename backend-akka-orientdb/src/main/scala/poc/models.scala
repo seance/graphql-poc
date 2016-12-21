@@ -29,12 +29,14 @@ trait Character {
   val kind: String
   val name: String
   val favoriteWeapon: Option[Weapon]
+  val assocIds: Seq[Int]
 }
 
 case class Organic(
     id: Int,
     name: String,
     favoriteWeapon: Option[Weapon],
+    assocIds: Seq[Int],
     species: Species,
     homePlanet: Planet) extends Character {
   override val kind = "organic"
@@ -44,6 +46,13 @@ case class Droid(
     id: Int,
     name: String,
     favoriteWeapon: Option[Weapon],
+    assocIds: Seq[Int],
     primaryFunction: DroidFunction) extends Character {
   override val kind = "droid"
 }
+
+case class Association(
+    assocId: Int,
+    targetId: Int,
+    sourceId: Int,
+    relation: String)
