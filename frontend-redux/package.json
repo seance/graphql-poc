@@ -14,7 +14,7 @@
     "watch": "n-run 'npm run watch-js' 'npm run watch-scss'",
     "serve": "npm run gen-queries && n-run 'npm run watch' 'nodemon server.js'",
     "copy-dist": "n-copy --source ./app --destination ./dist '*' && n-copy --source ./app/images --destination ./dist/images '*'",
-    "dist": "npm run build && npm run copy-dist",
+    "dist": "npm run build && npm run gen-queries && npm run copy-dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "github/seance",
