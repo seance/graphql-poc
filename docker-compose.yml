@@ -3,6 +3,16 @@ version: "2"
 services:
 
   ##
+  # Frontend 1: Redux
+  ##
+  frontend1_web:
+    build:
+      context: frontend-redux
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+
+  ##
   # Stack 1: Akka + Postgres
   ##
   backend1_web:

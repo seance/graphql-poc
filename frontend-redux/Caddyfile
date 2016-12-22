@@ -1,0 +1,15 @@
+0.0.0.0:8000
+root /srv
+
+proxy /backend1 backend1_web:8080 {
+  without /backend1
+}
+proxy /backend2 backend2_web:8080 {
+  without /backend2
+}
+proxy /backend3 backend3_web:8080 {
+  without /backend2
+}
+
+log stdout
+errors stdout

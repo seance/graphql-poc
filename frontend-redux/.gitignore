@@ -47,6 +47,7 @@ jspm_packages
 .yarn-integrity
 
 # App specific
+dist
 app/bundle.js
 app/bundle.css
 app/bundle.css.map
