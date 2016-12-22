@@ -1,11 +1,13 @@
 import fetch from 'isomorphic-fetch';
 import { print as printGraphQL } from 'graphql-tag/printer';
 
-const GRAPHQL_ENDPOINT = '/backend1/graphql'
+const graphQLEndpoint = backend => `/${backend}/graphql`
 
-export const fetchGraphQL = (query, variables) => {
-  const opName = query.definitions[0].name;
-  return fetch(GRAPHQL_ENDPOINT, {
+export const fetchGraphQL = (backend, query, variables) => {
+  const opName = query.definitions[0].name
+  const endpoint = graphQLEndpoint(backend)
+
+  return fetch(endpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

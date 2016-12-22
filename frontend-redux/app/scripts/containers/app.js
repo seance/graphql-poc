@@ -2,6 +2,8 @@ import React, { Component, PropTypes as P } from 'react'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
 
+import { selectBackend } from '../actions/app'
+
 class App extends Component {
 
   static propTypes = {
@@ -32,6 +34,16 @@ class App extends Component {
               <div className="header-icon icon-graphql"></div>
             </a>
           </div>
+          <div className="header-backend">
+            <div className="backend-label">
+              Backend stack
+            </div>
+            <select onChange={this.selectBackend.bind(this)}>
+              <option value="backend1">JVM + Relational</option>
+              <option value="backend2">JVM + Graph</option>
+              <option value="backend3" disabled>Node + Graph</option>
+            </select>
+          </div>
           <nav>
             <ul>
               <li><Link to={'/'} className={active.home}>Home</Link></li>
@@ -46,6 +58,10 @@ class App extends Component {
       </div>
     )
   }
+
+  selectBackend(e) {
+    this.props.selectBackend(e.target.value)
+  }
 }
 
 export default connect(state => ({
@@ -53,4 +69,5 @@ export default connect(state => ({
   ...state.router
 }), {
   // mapDispatchToProps
+  selectBackend
 })(App)
