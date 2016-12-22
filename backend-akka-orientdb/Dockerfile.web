@@ -1,11 +1,16 @@
-FROM openjdk:8-jdk
+FROM iflavoursbv/sbt-openjdk-8-alpine:0.13.12
 MAINTAINER github/seance
 
-RUN mkdir -p /app
-WORKDIR /app
+# Copy source
+RUN mkdir -p /app /app/project /app/src
+COPY build.sbt /app/build.sbt
+COPY project/plugins.sbt /app/project/plugins.sbt
+COPY src /app/src
 
-COPY target/scala-2.11/backend-akka-orientdb_2.11-1.0.0-one-jar.jar /app
+# Build JAR
+WORKDIR /app
+RUN ["sbt", "one-jar"]
 
 EXPOSE 8080
 
-CMD ["java", "-jar", "/app/backend-akka-orientdb_2.11-1.0.0-one-jar.jar"]
+CMD ["java", "-jar", "/app/target/scala-2.11/backend-akka-orientdb_2.11-1.0.0-one-jar.jar"]
