@@ -7,8 +7,9 @@ import SpeciesList from '../components/speciesList'
 class Species extends Component {
 
   static propTypes = {
-    isFetching: P.bool.isRequired,
-    species   : P.arrayOf(P.object).isRequired
+    isFetching  : P.bool.isRequired,
+    species     : P.arrayOf(P.object).isRequired,
+    fetchSpecies: P.func.isRequired
   }
 
   componentDidMount() {

@@ -7,8 +7,9 @@ import CharacterList from '../components/characterList'
 class Home extends Component {
 
   static propTypes = {
-    isFetching: P.bool.isRequired,
-    characters: P.arrayOf(P.object).isRequired
+    isFetching     : P.bool.isRequired,
+    characters     : P.arrayOf(P.object).isRequired,
+    fetchCharacters: P.func.isRequired
   }
 
   componentDidMount() {

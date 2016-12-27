@@ -7,8 +7,9 @@ import PlanetList from '../components/planetList'
 class Planets extends Component {
 
   static propTypes = {
-    isFetching: P.bool.isRequired,
-    planets   : P.arrayOf(P.object).isRequired
+    isFetching  : P.bool.isRequired,
+    planets     : P.arrayOf(P.object).isRequired,
+    fetchPlanets: P.func.isRequired
   }
 
   componentDidMount() {

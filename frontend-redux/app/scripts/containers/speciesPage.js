@@ -9,8 +9,9 @@ import CharacterList from '../components/characterList'
 class SpeciesPage extends Component {
 
   static propTypes = {
-    isFetching: P.bool.isRequired,
-    species   : P.object
+    isFetching            : P.bool.isRequired,
+    species               : P.object,
+    fetchSpeciesAndRelated: P.func.isRequired
   }
 
   componentDidMount() {

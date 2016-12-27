@@ -7,6 +7,7 @@ import { selectBackend } from '../actions/app'
 class App extends Component {
 
   static propTypes = {
+    selectBackend: P.func.isRequired
   }
 
   render() {

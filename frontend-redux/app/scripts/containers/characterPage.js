@@ -8,8 +8,9 @@ import AssociateList from '../components/associateList'
 class CharacterPage extends Component {
 
   static propTypes = {
-    isFetching: P.bool.isRequired,
-    character : P.object
+    isFetching             : P.bool.isRequired,
+    character              : P.object,
+    fetchCharacterAndAssocs: P.func.isRequired
   }
 
   componentDidMount() {
