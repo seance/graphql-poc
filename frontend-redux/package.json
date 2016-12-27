@@ -6,13 +6,13 @@
   "scripts": {
     "clean": "n-clean app/bundle.js app/bundle.css app/bundle.css.map dist",
     "gen-queries": "node querygen.js",
-    "build": "npm run clean && npm run build-js && npm run build-scss",
+    "build": "npm run build-js && npm run build-scss",
     "build-js": "browserify app/scripts/index.js -o app/bundle.js",
     "build-scss": "node-sass --output-style compressed --sourceMap true ./app/styles/styles.scss ./app/bundle.css",
     "watch-js": "n-run -w 'app/scripts/**/*.js' 'npm run build-js'",
     "watch-scss": "n-run -w './app/styles/**/*.scss' 'npm run build-scss'",
     "watch": "n-run 'npm run watch-js' 'npm run watch-scss'",
-    "serve": "npm run gen-queries && n-run 'npm run watch' 'nodemon server.js'",
+    "serve": "npm run gen-queries && npm run build && n-run 'npm run watch' 'nodemon server.js'",
     "copy-dist": "n-copy --source ./app --destination ./dist '*' && n-copy --source ./app/images --destination ./dist/images '*'",
     "dist": "npm run gen-queries && npm run build && npm run copy-dist",
     "test": "echo \"Error: no test specified\" && exit 1"
