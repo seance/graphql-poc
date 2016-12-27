@@ -7,6 +7,7 @@ RUN apk --update add nodejs=6.7.0-r0
 # Copy source
 RUN mkdir -p /app /app/app
 COPY package.json /app
+COPY npm-shrinkwrap.json /app
 COPY querygen.js /app
 COPY app /app/app
 

@@ -1,6 +1,21 @@
-FROM keymetrics/pm2-docker-alpine:latest
+FROM mhart/alpine-node:7.3.0
 MAINTAINER github/seance
 
-COPY . /app
+# Install PM2
+RUN npm install pm2 -g
+
+# Copy source
+RUN mkdir -p /app /app/app
+COPY package.json /app
+COPY process.yml /app
+COPY npm-shrinkwrap.json /app
+COPY app /app/app
+
+WORKDIR /app
+
+# Install dependencies
+RUN npm install
 
 EXPOSE 8080
+
+CMD ["pm2-docker", "start", "--auto-exit", "--env", "production", "process.yml"]
