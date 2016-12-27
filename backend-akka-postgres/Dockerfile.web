@@ -9,7 +9,7 @@ COPY src /app/src
 
 # Build JAR
 WORKDIR /app
-RUN ["sbt", "one-jar"]
+RUN sbt one-jar
 
 EXPOSE 8080
 
