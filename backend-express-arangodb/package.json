@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "arangojs": "^5.4.1",
+    "babel-core": "^6.21.0",
+    "babel-preset-latest": "^6.16.0",
     "express": "^4.14.0",
     "express-graphql": "^0.6.1",
     "graphql": "^0.8.2",
@@ -18,7 +20,6 @@
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
-    "babel-preset-latest": "^6.16.0",
     "nodemon": "^1.11.0"
   },
   "babel": {
