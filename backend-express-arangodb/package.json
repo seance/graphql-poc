@@ -16,7 +16,8 @@
     "express": "^4.14.0",
     "express-graphql": "^0.6.1",
     "graphql": "^0.8.2",
-    "habitat": "^3.1.2"
+    "habitat": "^3.1.2",
+    "ramda": "^0.22.1"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
