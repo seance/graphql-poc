@@ -9,8 +9,12 @@ import {
   GraphQLInt
 } from 'graphql'
 
+import DataLoader from 'dataloader'
 import R from 'ramda'
 import * as q from './queries'
+
+export const charLoader = () =>
+  new DataLoader(ids => q.findCharactersByIds(ids))
 
 const FactionType = new GraphQLEnumType({
   name: 'Faction',
@@ -83,7 +87,8 @@ const AssociationType = new GraphQLObjectType({
     relation: { type: GraphQLString },
     character: {
       type: CharacterType,
-      resolve: (root) => q.findCharacter(root._from)
+      resolve: (root, args, context, info) =>
+        context.charLoader.load(root._from)
     }
   })
 })
@@ -169,7 +174,7 @@ const QueryType = new GraphQLObjectType({
   })
 })
 
-export default new GraphQLSchema({
+export const schema = new GraphQLSchema({
   types: [OrganicType, DroidType],
   query: QueryType
 })
