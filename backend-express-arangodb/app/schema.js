@@ -43,7 +43,17 @@ const SpeciesType = new GraphQLObjectType({
   name: 'Species',
   fields: () => ({
     id: { type: GraphQLID, resolve: (root) => root._id },
-    name: { type: GraphQLString }
+    name: { type: GraphQLString },
+    foundOn: {
+      type: new GraphQLList(PlanetType),
+      resolve: (root) =>
+        q.findPlanetsBySpecies(root._id)
+    },
+    notableMembers: {
+      type: new GraphQLList(CharacterType),
+      resolve: (root) =>
+        q.findCharactersBySpecies(root._id)
+    }
   })
 })
 
