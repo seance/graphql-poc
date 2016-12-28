@@ -13,7 +13,7 @@ services:
       - "8000:8000"
 
   ##
-  # Stack 1: Akka + Postgres
+  # Backend 1: Akka + Postgres
   ##
   backend1_web:
     build:
@@ -43,7 +43,7 @@ services:
       - POSTGRES_DB=pocdb
 
   ##
-  # Stack 2: Akka + OrientDB
+  # Backend 2: Akka + OrientDB
   ##
   backend2_web:
     build:
@@ -71,7 +71,7 @@ services:
       - ORIENT_DB=/orientdb/databases/pocdb
 
   ##
-  # Stack 3: Express + ArangoDB
+  # Backend 3: Express + ArangoDB
   ##
   backend3_web:
     build:
