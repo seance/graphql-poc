@@ -58,4 +58,9 @@ Explores using a graph data source with GraphQL using Apache Tinkerpop 3 Gremlin
 
 ### Node + Graph (`backend-express-arangodb`)
 
-*Not implemented yet*
+Explores using a graph data source with GraphQL using ArangoDB's AQL language via the ArangoJS driver.
+
+* Persistence: [ArangoDB](https://www.arangodb.com/)
+* Query language: [AQL](https://docs.arangodb.com/3.1/AQL/)
+* GraphQL implementation: [GraphQL.js](https://github.com/graphql/graphql-js)
+* Web server/routing: [Express](http://expressjs.com/)
