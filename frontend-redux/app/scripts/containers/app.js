@@ -42,7 +42,7 @@ class App extends Component {
             <select onChange={this.selectBackend.bind(this)}>
               <option value="backend1">JVM + Relational</option>
               <option value="backend2">JVM + Graph</option>
-              <option value="backend3" disabled>Node + Graph</option>
+              <option value="backend3">Node + Graph</option>
             </select>
           </div>
           <nav>
