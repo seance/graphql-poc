@@ -62,7 +62,17 @@ const PlanetType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID, resolve: (root) => root._id },
     name: { type: GraphQLString },
-    ecology: { type: GraphQLString }
+    ecology: { type: GraphQLString },
+    species: {
+      type: new GraphQLList(SpeciesType),
+      resolve: (root) =>
+        q.findSpeciesByPlanet(root._id)
+    },
+    natives: {
+      type: new GraphQLList(CharacterType),
+      resolve: (root) =>
+        q.findNativesByPlanet(root._id)
+    }
   })
 })
 

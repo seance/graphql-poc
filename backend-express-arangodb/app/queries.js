@@ -54,6 +54,23 @@ const queryCharactersBySpecies = (speciesId) => aql`
     )
   )`
 
+const querySpeciesByPlanet = (planetId) => aql`
+  FOR p IN planets FILTER p._id == ${planetId} RETURN UNIQUE(FLATTEN(
+    FOR c IN INBOUND p home_planet RETURN (
+      FOR s IN OUTBOUND c is_species RETURN s
+    )
+  ))`
+
+const queryNativesByPlanet = (planetId) => aql`
+  FOR p IN planets FILTER p._id == ${planetId} RETURN (
+    FOR c IN INBOUND p home_planet RETURN MERGE(c,
+      (FOR v IN OUTBOUND c favorite_weapon RETURN { favoriteWeapon: v })[0] || {},
+      (FOR v IN OUTBOUND c home_planet RETURN { homePlanet: v })[0] || {},
+      (FOR v IN OUTBOUND c is_species RETURN { species: v })[0] || {},
+      { associations: (FOR v, e IN INBOUND c association RETURN e) }
+    )
+  )`
+
 export const findAllCharacters = () =>
   getAll(queryAllCharacters())
 
@@ -77,3 +94,9 @@ export const findPlanetsBySpecies = speciesId =>
 
 export const findCharactersBySpecies = speciesId =>
   getAll(queryCharactersBySpecies(speciesId), R.head)
+
+export const findSpeciesByPlanet = planetId =>
+  getAll(querySpeciesByPlanet(planetId), R.head)
+
+export const findNativesByPlanet = planetId =>
+  getAll(queryNativesByPlanet(planetId), R.head)
