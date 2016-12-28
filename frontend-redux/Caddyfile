@@ -8,7 +8,7 @@ proxy /backend2 backend2_web:8080 {
   without /backend2
 }
 proxy /backend3 backend3_web:8080 {
-  without /backend2
+  without /backend3
 }
 
 log stdout
