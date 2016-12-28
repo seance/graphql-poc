@@ -19,63 +19,93 @@ const queryAllCharacters = () => aql`
     (FOR v IN OUTBOUND c favorite_weapon RETURN { favoriteWeapon: v })[0] || {},
     (FOR v IN OUTBOUND c home_planet RETURN { homePlanet: v })[0] || {},
     (FOR v IN OUTBOUND c is_species RETURN { species: v })[0] || {},
-    { associations: (FOR v, e IN INBOUND c association RETURN e) }
+    { associations: (FOR a, e IN INBOUND c association RETURN {
+        id: e.id,
+        targetId: c.id,
+        sourceId: a.id,
+        relation: e.relation
+      })
+    }
   )`
 
 const queryCharacter = (id) => aql`
-  FOR c IN characters FILTER c._id == ${id} RETURN MERGE(c,
+  FOR c IN characters FILTER c.id == ${id} RETURN MERGE(c,
     (FOR v IN OUTBOUND c favorite_weapon RETURN { favoriteWeapon: v })[0] || {},
     (FOR v IN OUTBOUND c home_planet RETURN { homePlanet: v })[0] || {},
     (FOR v IN OUTBOUND c is_species RETURN { species: v })[0] || {},
-    { associations: (FOR v, e IN INBOUND c association RETURN e) }
+    { associations: (FOR a, e IN INBOUND c association RETURN {
+        id: e.id,
+        targetId: c.id,
+        sourceId: a.id,
+        relation: e.relation
+      })
+    }
   )`
 
 const queryPlanet = (id) => aql`
-  FOR p IN planets FILTER p._id == ${id} RETURN p`
+  FOR p IN planets FILTER p.id == ${id} RETURN p`
 
 const querySpecies1 = (id) => aql`
-  FOR s IN species FILTER s._id == ${id} RETURN s`
+  FOR s IN species FILTER s.id == ${id} RETURN s`
 
 const queryPlanetsBySpecies = (speciesId) => aql`
-  FOR s IN species FILTER s._id == ${speciesId} RETURN UNIQUE(FLATTEN(
+  FOR s IN species FILTER s.id == ${speciesId} RETURN UNIQUE(FLATTEN(
     FOR c IN INBOUND s is_species RETURN (
       FOR p IN OUTBOUND c home_planet RETURN p
     )
   ))`
 
 const queryCharactersBySpecies = (speciesId) => aql`
-  FOR s IN species FILTER s._id == ${speciesId} RETURN FLATTEN(
+  FOR s IN species FILTER s.id == ${speciesId} RETURN FLATTEN(
     FOR c IN INBOUND s is_species RETURN MERGE(c,
       (FOR v IN OUTBOUND c favorite_weapon RETURN { favoriteWeapon: v })[0] || {},
       (FOR v IN OUTBOUND c home_planet RETURN { homePlanet: v })[0] || {},
       (FOR v IN OUTBOUND c is_species RETURN { species: v })[0] || {},
-      { associations: (FOR v, e IN INBOUND c association RETURN e) }
+      { associations: (FOR a, e IN INBOUND c association RETURN {
+          id: e.id,
+          targetId: c.id,
+          sourceId: a.id,
+          relation: e.relation
+        })
+      }
     )
   )`
 
 const querySpeciesByPlanet = (planetId) => aql`
-  FOR p IN planets FILTER p._id == ${planetId} RETURN UNIQUE(FLATTEN(
+  FOR p IN planets FILTER p.id == ${planetId} RETURN UNIQUE(FLATTEN(
     FOR c IN INBOUND p home_planet RETURN (
       FOR s IN OUTBOUND c is_species RETURN s
     )
   ))`
 
 const queryNativesByPlanet = (planetId) => aql`
-  FOR p IN planets FILTER p._id == ${planetId} RETURN (
+  FOR p IN planets FILTER p.id == ${planetId} RETURN (
     FOR c IN INBOUND p home_planet RETURN MERGE(c,
       (FOR v IN OUTBOUND c favorite_weapon RETURN { favoriteWeapon: v })[0] || {},
       (FOR v IN OUTBOUND c home_planet RETURN { homePlanet: v })[0] || {},
       (FOR v IN OUTBOUND c is_species RETURN { species: v })[0] || {},
-      { associations: (FOR v, e IN INBOUND c association RETURN e) }
+      { associations: (FOR a, e IN INBOUND c association RETURN {
+          id: e.id,
+          targetId: c.id,
+          sourceId: a.id,
+          relation: e.relation
+        })
+      }
     )
   )`
 
 const queryCharactersByIds = (characterIds) => aql`
-  FOR c IN characters FILTER c._id IN ${characterIds} RETURN MERGE(c,
+  FOR c IN characters FILTER c.id IN ${characterIds} RETURN MERGE(c,
     (FOR v IN OUTBOUND c favorite_weapon RETURN { favoriteWeapon: v })[0] || {},
     (FOR v IN OUTBOUND c home_planet RETURN { homePlanet: v })[0] || {},
     (FOR v IN OUTBOUND c is_species RETURN { species: v })[0] || {},
-    { associations: (FOR v, e IN INBOUND c association RETURN e) }
+    { associations: (FOR a, e IN INBOUND c association RETURN {
+        id: e.id,
+        targetId: c.id,
+        sourceId: a.id,
+        relation: e.relation
+      })
+    }
   )`
 
 export const findAllCharacters = () =>

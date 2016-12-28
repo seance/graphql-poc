@@ -14,7 +14,8 @@ import R from 'ramda'
 import * as q from './queries'
 
 export const charLoader = () =>
-  new DataLoader(ids => q.findCharactersByIds(ids))
+  new DataLoader(ids => q.findCharactersByIds(ids).then(rows =>
+    ids.map(id => R.find(R.propEq('id', id))(rows))))
 
 const FactionType = new GraphQLEnumType({
   name: 'Faction',
@@ -38,7 +39,7 @@ const DroidFunctionType = new GraphQLEnumType({
 const WeaponType = new GraphQLObjectType({
   name: 'Weapon',
   fields: () => ({
-    id: { type: GraphQLID, resolve: (root) => root._id },
+    id: { type: GraphQLID, resolve: (root) => root.id.toString() },
     name: { type: GraphQLString }
   })
 })
@@ -46,17 +47,17 @@ const WeaponType = new GraphQLObjectType({
 const SpeciesType = new GraphQLObjectType({
   name: 'Species',
   fields: () => ({
-    id: { type: GraphQLID, resolve: (root) => root._id },
+    id: { type: GraphQLID, resolve: (root) => root.id.toString() },
     name: { type: GraphQLString },
     foundOn: {
       type: new GraphQLList(PlanetType),
       resolve: (root) =>
-        q.findPlanetsBySpecies(root._id)
+        q.findPlanetsBySpecies(root.id)
     },
     notableMembers: {
-      type: new GraphQLList(CharacterType),
+      type: new GraphQLList(OrganicType),
       resolve: (root) =>
-        q.findCharactersBySpecies(root._id)
+        q.findCharactersBySpecies(root.id)
     }
   })
 })
@@ -64,18 +65,18 @@ const SpeciesType = new GraphQLObjectType({
 const PlanetType = new GraphQLObjectType({
   name: 'Planet',
   fields: () => ({
-    id: { type: GraphQLID, resolve: (root) => root._id },
+    id: { type: GraphQLID, resolve: (root) => root.id.toString() },
     name: { type: GraphQLString },
     ecology: { type: GraphQLString },
     species: {
       type: new GraphQLList(SpeciesType),
       resolve: (root) =>
-        q.findSpeciesByPlanet(root._id)
+        q.findSpeciesByPlanet(root.id)
     },
     natives: {
-      type: new GraphQLList(CharacterType),
+      type: new GraphQLList(OrganicType),
       resolve: (root) =>
-        q.findNativesByPlanet(root._id)
+        q.findNativesByPlanet(root.id)
     }
   })
 })
@@ -83,18 +84,18 @@ const PlanetType = new GraphQLObjectType({
 const AssociationType = new GraphQLObjectType({
   name: 'Association',
   fields: () => ({
-    id: { type: GraphQLID, resolve: (root) => root._id },
+    id: { type: GraphQLID, resolve: (root) => root.id.toString() },
     relation: { type: GraphQLString },
     character: {
       type: CharacterType,
       resolve: (root, args, context, info) =>
-        context.charLoader.load(root._from)
+        context.charLoader.load(root.sourceId)
     }
   })
 })
 
 const characterCommonFields = {
-  id: { type: GraphQLID, resolve: (root) => root._id },
+  id: { type: GraphQLID, resolve: (root) => root.id.toString() },
   kind: { type: GraphQLString },
   name: { type: GraphQLString },
   faction: { type: FactionType },
@@ -153,7 +154,7 @@ const QueryType = new GraphQLObjectType({
         characterId: { type: GraphQLID }
       },
       resolve: (root, args, context, info) =>
-        q.findCharacter(args.characterId)
+        q.findCharacter(parseInt(args.characterId, 10))
     },
     planet: {
       type: PlanetType,
@@ -161,7 +162,7 @@ const QueryType = new GraphQLObjectType({
         planetId: { type: GraphQLID }
       },
       resolve: (root, args, context, info) =>
-        q.findPlanet(args.planetId)
+        q.findPlanet(parseInt(args.planetId, 10))
     },
     species1: {
       type: SpeciesType,
@@ -169,7 +170,7 @@ const QueryType = new GraphQLObjectType({
         speciesId: { type: GraphQLID }
       },
       resolve: (root, args, context, info) =>
-        q.findSpecies1(args.speciesId)
+        q.findSpecies1(parseInt(args.speciesId, 10))
     }
   })
 })
