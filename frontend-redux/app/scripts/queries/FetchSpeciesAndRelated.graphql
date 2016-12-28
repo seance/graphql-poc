@@ -1,5 +1,5 @@
 query FetchPlanetAndRelated($speciesId: ID!) {
-  species(speciesId: $speciesId) {
+  species1(speciesId: $speciesId) {
     name
     foundOn {
       id

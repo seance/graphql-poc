@@ -126,7 +126,7 @@ trait PocSchema { self: PocDatabase with PocQueries =>
   
   val CharIdArg = Argument("characterId", IDType, "Character id")
   val PlanetIdArg = Argument("planetId", IDType, "Planet id")
-  val SpeciesIdArg = Argument("speciesId", OptionInputType(IDType), "Species id")
+  val SpeciesIdArg = Argument("speciesId", IDType, "Species id")
   
   val EpisodeArg = Argument("episode", OptionInputType(EpisodeType), "Optionally limit query to an episode")
   val CommentInputArg = Argument("commentInput", CommentInputType, "Comment input")
@@ -166,10 +166,7 @@ trait PocSchema { self: PocDatabase with PocQueries =>
       Field("species",
           ListType(SpeciesType),
           Some("List known species"),
-          arguments = SpeciesIdArg :: Nil,
-          resolve = c => c.arg(SpeciesIdArg)
-            .map(speciesId => findSpecies(c.ctx)(speciesId.toInt).map(_.toList))
-            .getOrElse(findAllSpecies(c.ctx))),
+          resolve = c => findAllSpecies(c.ctx)),
       Field("comments",
           ListType(CommentType),
           Some("Comments between characters"),
@@ -184,6 +181,11 @@ trait PocSchema { self: PocDatabase with PocQueries =>
           Some("Find planet by id"),
           arguments = PlanetIdArg :: Nil,
           resolve = c => findPlanet(c.ctx)((c arg PlanetIdArg).toInt)),
+      Field("species1",
+          OptionType(SpeciesType),
+          Some("Find species by id"),
+          arguments = SpeciesIdArg :: Nil,
+          resolve = c => findSpecies(c.ctx)((c arg SpeciesIdArg).toInt)),
       Field("associatesByCharacter",
           ListType(AssociationType),
           Some("Associates of a character"),

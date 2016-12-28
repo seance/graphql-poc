@@ -86,22 +86,21 @@ trait PocSchema { self: PocQueries with PocDatabase =>
           
   val CharIdArg = Argument("characterId", IDType, "Character id")
   val PlanetIdArg = Argument("planetId", IDType, "Planet id")
-  val SpeciesIdArg = Argument("speciesId", OptionInputType(IDType), "Species id, optionally")
+  val SpeciesIdArg = Argument("speciesId", IDType, "Species id")
   
   val QueryType = ObjectType("Query", fields[Unit, Unit](
       Field("characters", ListType(CharacterType), resolve = c => withGraph(findAllCharacters)),
       Field("planets", ListType(PlanetType), resolve = c => withGraph(findAllPlanets)),
-      Field("species", ListType(SpeciesType),
-          arguments = SpeciesIdArg :: Nil,
-          resolve = c => c.arg(SpeciesIdArg)
-            .map(speciesId => withGraph(findSpecies(_)(speciesId.toInt).toList))
-            .getOrElse(withGraph(findAllSpecies))),
+      Field("species", ListType(SpeciesType), resolve = c => withGraph(findAllSpecies)),
       Field("character", OptionType(CharacterType),
           arguments = CharIdArg :: Nil,
           resolve = c => withGraph(findCharacter(_)((c arg CharIdArg).toInt))),
       Field("planet", OptionType(PlanetType),
           arguments = PlanetIdArg :: Nil,
-          resolve = c => withGraph(findPlanet(_)((c arg PlanetIdArg).toInt)))
+          resolve = c => withGraph(findPlanet(_)((c arg PlanetIdArg).toInt))),
+      Field("species1", OptionType(SpeciesType),
+          arguments = SpeciesIdArg :: Nil,
+          resolve = c => withGraph(findSpecies(_)((c arg SpeciesIdArg).toInt)))
   ))
       
   val PocSchema = Schema(QueryType, additionalTypes = List(OrganicType, DroidType))

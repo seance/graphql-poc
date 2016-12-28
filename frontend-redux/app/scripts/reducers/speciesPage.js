@@ -13,7 +13,7 @@ export default (state = initialState, action) => {
     case FetchSpeciesAndRelated.Success:
       return state.merge(Immutable.fromJS({
         isFetching: false,
-        species: action.payload.species[0]
+        species: action.payload.species1
       }))
   }
 
