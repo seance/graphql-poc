@@ -9,6 +9,7 @@ import {
   GraphQLInt
 } from 'graphql'
 
+import R from 'ramda'
 import * as q from './queries'
 
 const FactionType = new GraphQLEnumType({
@@ -33,7 +34,7 @@ const DroidFunctionType = new GraphQLEnumType({
 const WeaponType = new GraphQLObjectType({
   name: 'Weapon',
   fields: () => ({
-    id: { type: GraphQLID, resolve: (root) => root._key },
+    id: { type: GraphQLID, resolve: (root) => root._id },
     name: { type: GraphQLString }
   })
 })
@@ -41,7 +42,7 @@ const WeaponType = new GraphQLObjectType({
 const SpeciesType = new GraphQLObjectType({
   name: 'Species',
   fields: () => ({
-    id: { type: GraphQLID, resolve: (root) => root._key },
+    id: { type: GraphQLID, resolve: (root) => root._id },
     name: { type: GraphQLString }
   })
 })
@@ -49,7 +50,7 @@ const SpeciesType = new GraphQLObjectType({
 const PlanetType = new GraphQLObjectType({
   name: 'Planet',
   fields: () => ({
-    id: { type: GraphQLID, resolve: (root) => root._key },
+    id: { type: GraphQLID, resolve: (root) => root._id },
     name: { type: GraphQLString },
     ecology: { type: GraphQLString }
   })
@@ -58,16 +59,25 @@ const PlanetType = new GraphQLObjectType({
 const AssociationType = new GraphQLObjectType({
   name: 'Association',
   fields: () => ({
-    id: { type: GraphQLID, resolve: (root) => root._key },
-    relation: { type: GraphQLString }
+    id: { type: GraphQLID, resolve: (root) => root._id },
+    relation: { type: GraphQLString },
+    character: {
+      type: CharacterType,
+      resolve: (root) => q.findCharacter(root._from)
+    }
   })
 })
 
 const characterCommonFields = {
-  id: { type: GraphQLID, resolve: (root) => root._key },
+  id: { type: GraphQLID, resolve: (root) => root._id },
   kind: { type: GraphQLString },
   name: { type: GraphQLString },
-  favoriteWeapon: { type: WeaponType }
+  faction: { type: FactionType },
+  favoriteWeapon: { type: WeaponType },
+  associates: {
+    type: new GraphQLList(AssociationType),
+    resolve: (root) => root.associations
+  }
 }
 
 const CharacterType = new GraphQLInterfaceType({
@@ -80,7 +90,7 @@ const CharacterType = new GraphQLInterfaceType({
 const OrganicType = new GraphQLObjectType({
   name: 'Organic',
   interfaces: [CharacterType],
-  fields: () => Object.assign({}, characterCommonFields, {
+  fields: () => R.merge(characterCommonFields, {
     species: { type: SpeciesType },
     homePlanet: { type: PlanetType }
   })
@@ -89,7 +99,7 @@ const OrganicType = new GraphQLObjectType({
 const DroidType = new GraphQLObjectType({
   name: 'Droid',
   interfaces: [CharacterType],
-  fields: () => Object.assign({}, characterCommonFields, {
+  fields: () => R.merge(characterCommonFields, {
     primaryFunction: { type: DroidFunctionType }
   })
 })
@@ -111,6 +121,30 @@ const QueryType = new GraphQLObjectType({
       type: new GraphQLList(SpeciesType),
       resolve: (root, args, context, info) =>
         q.findAllSpecies()
+    },
+    character: {
+      type: CharacterType,
+      args: {
+        characterId: { type: GraphQLID }
+      },
+      resolve: (root, args, context, info) =>
+        q.findCharacter(args.characterId)
+    },
+    planet: {
+      type: PlanetType,
+      args: {
+        planetId: { type: GraphQLID }
+      },
+      resolve: (root, args, context, info) =>
+        q.findPlanet(args.planetId)
+    },
+    species1: {
+      type: SpeciesType,
+      args: {
+        speciesId: { type: GraphQLID }
+      },
+      resolve: (root, args, context, info) =>
+        q.findSpecies1(args.speciesId)
     }
   })
 })
