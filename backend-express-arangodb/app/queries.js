@@ -38,8 +38,8 @@ const querySpecies1 = (id) => aql`
 
 const queryPlanetsBySpecies = (speciesId) => aql`
   FOR s IN species FILTER s._id == ${speciesId} RETURN UNIQUE(FLATTEN(
-    FOR v IN INBOUND s is_species RETURN (
-      FOR p IN OUTBOUND v home_planet RETURN p
+    FOR c IN INBOUND s is_species RETURN (
+      FOR p IN OUTBOUND c home_planet RETURN p
     )
   ))
   `
