@@ -21,7 +21,7 @@ After the startup has completed, navigate to [http://localhost:8000](http://loca
 
 ## Frontend
 
-Each frontend implementation should be able to query any backend. The currently used backend should be changeable from the user inteface.
+Each frontend implementation should be able to query any backend. The currently used backend should be changeable from the user interface.
 
 ### Redux (`frontend-redux`)
 
