@@ -41,8 +41,7 @@ const queryPlanetsBySpecies = (speciesId) => aql`
     FOR c IN INBOUND s is_species RETURN (
       FOR p IN OUTBOUND c home_planet RETURN p
     )
-  ))
-  `
+  ))`
 
 const queryCharactersBySpecies = (speciesId) => aql`
   FOR s IN species FILTER s._id == ${speciesId} RETURN FLATTEN(
