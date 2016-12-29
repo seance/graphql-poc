@@ -7,7 +7,7 @@ As such, the project is divided into multiple implementations of the frontend an
 The *Star Wars* theme was chosen since the official GraphQL examples use this theme.
 
 **Prerequisites**
-* [Docker](https://www.docker.com/) 1.13+ with Docker Compose
+* ![Docker](https://github.com/seance/graphql-poc/blob/master/readme-files/docker.png) [Docker](https://www.docker.com/) 1.13+ with Docker Compose
 
 Also make sure the ports forwarded from the containers (see docker-compose.yml) are available, or remove the port mappings. The database container port mappings exist for debugging purposes.
 
