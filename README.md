@@ -25,9 +25,9 @@ Each frontend implementation should be able to query any backend. The currently 
 
 ### Redux (`frontend-redux`)
 
-![React](https://github.com/seance/graphql-poc/blob/master/doc/react.png)
-![Redux](https://github.com/seance/graphql-poc/blob/master/doc/redux.png)
-![GraphQL](https://github.com/seance/graphql-poc/blob/master/doc/graphql.png)
+![React](https://github.com/seance/graphql-poc/blob/master/readme-files/react.png)
+![Redux](https://github.com/seance/graphql-poc/blob/master/readme-files/redux.png)
+![GraphQL](https://github.com/seance/graphql-poc/blob/master/readme-files/graphql.png)
 
 Served on port 8000. Uses `isomorphic-fetch` to directly access the GraphQL API endpoint.
 
@@ -44,11 +44,11 @@ The schema used exercises a range of GraphQL's facilities, including interfaces 
 
 ### JVM + Relational (`backend-akka-postgres`)
 
-![Scala](https://github.com/seance/graphql-poc/blob/master/doc/scala.png)
-![Akka](https://github.com/seance/graphql-poc/blob/master/doc/akka.png)
-![Sangria](https://github.com/seance/graphql-poc/blob/master/doc/sangria.png)
-![Slick](https://github.com/seance/graphql-poc/blob/master/doc/slick.png)
-![PostgreSQL](https://github.com/seance/graphql-poc/blob/master/doc/postgres.png)
+![Scala](https://github.com/seance/graphql-poc/blob/master/readme-files/scala.png)
+![Akka](https://github.com/seance/graphql-poc/blob/master/readme-files/akka.png)
+![Sangria](https://github.com/seance/graphql-poc/blob/master/readme-files/sangria.png)
+![Slick](https://github.com/seance/graphql-poc/blob/master/readme-files/slick.png)
+![PostgreSQL](https://github.com/seance/graphql-poc/blob/master/readme-files/postgres.png)
 
 Explores using a relational data source with GraphQL, with Scala's usual Slick database access and query library.
 
@@ -59,11 +59,11 @@ Explores using a relational data source with GraphQL, with Scala's usual Slick d
 
 ### JVM + Graph (`backend-akka-orientdb`)
 
-![Scala](https://github.com/seance/graphql-poc/blob/master/doc/scala.png)
-![Akka](https://github.com/seance/graphql-poc/blob/master/doc/akka.png)
-![Sangria](https://github.com/seance/graphql-poc/blob/master/doc/sangria.png)
-![Gremlin](https://github.com/seance/graphql-poc/blob/master/doc/gremlin.png)
-![OrientDB](https://github.com/seance/graphql-poc/blob/master/doc/orientdb.png)
+![Scala](https://github.com/seance/graphql-poc/blob/master/readme-files/scala.png)
+![Akka](https://github.com/seance/graphql-poc/blob/master/readme-files/akka.png)
+![Sangria](https://github.com/seance/graphql-poc/blob/master/readme-files/sangria.png)
+![Gremlin](https://github.com/seance/graphql-poc/blob/master/readme-files/gremlin.png)
+![OrientDB](https://github.com/seance/graphql-poc/blob/master/readme-files/orientdb.png)
 
 Explores using a graph data source with GraphQL using Apache Tinkerpop 3 Gremlin query language implementation for Scala.
 
@@ -74,10 +74,10 @@ Explores using a graph data source with GraphQL using Apache Tinkerpop 3 Gremlin
 
 ### Node + Graph (`backend-express-arangodb`)
 
-![NodeJS](https://github.com/seance/graphql-poc/blob/master/doc/node.png)
-![Express](https://github.com/seance/graphql-poc/blob/master/doc/express.png)
-![GraphQL.js](https://github.com/seance/graphql-poc/blob/master/doc/graphqljs.png)
-![ArangoDB](https://github.com/seance/graphql-poc/blob/master/doc/arangodb.png)
+![NodeJS](https://github.com/seance/graphql-poc/blob/master/readme-files/node.png)
+![Express](https://github.com/seance/graphql-poc/blob/master/readme-files/express.png)
+![GraphQL.js](https://github.com/seance/graphql-poc/blob/master/readme-files/graphqljs.png)
+![ArangoDB](https://github.com/seance/graphql-poc/blob/master/readme-files/arangodb.png)
 
 Explores using a graph data source with GraphQL using ArangoDB's AQL language via the ArangoJS driver.
 
